@@ -169,8 +169,8 @@ namespace NgAir.FrontEnd.Pages.Countries
         {
             var result = await SweetAlertService.FireAsync(new SweetAlertOptions
             {
-                Title = "Confirmación",
-                Text = $"¿Realmente deseas eliminar el departamento/estado? {state.Name}",
+                Title = "Confirmation",
+                Text = $"Do you really want to eliminate the state {state.Name} ?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true,
                 CancelButtonText = "No",
@@ -202,7 +202,7 @@ namespace NgAir.FrontEnd.Pages.Countries
                 ShowConfirmButton = true,
                 Timer = 3000
             });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con éxito.");
+            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Record successfully deleted.");
         }
     }
 }

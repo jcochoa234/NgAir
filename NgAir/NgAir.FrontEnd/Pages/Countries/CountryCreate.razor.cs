@@ -39,7 +39,7 @@ namespace NgAir.FrontEnd.Pages.Countries
                 ShowConfirmButton = true,
                 Timer = 3000
             });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro creado con éxito.");
+            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registration successfully created.");
         }
 
         private void Return()

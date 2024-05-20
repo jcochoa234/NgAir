@@ -10,12 +10,12 @@ else
         <div class="card-header">
             <span>
                 <i class="bi bi-globe-americas" /> @country.Name
-                <a class="btn btn-sm btn-primary float-end mx-1" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-square" />  Adicionar Estado/Departamento</a>
-                <a class="btn btn-sm btn-success float-end" href="/countries"><i class="bi bi-arrow-left" />  Regresar</a>
+                <a class="btn btn-sm btn-primary float-end mx-1" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-square" />  Create State</a>
+                <a class="btn btn-sm btn-success float-end" href="/countries"><i class="bi bi-arrow-left" />  Return</a>
             </span>
         </div>
         <div class="card-body">
-            <Filter PlaceHolder="Buscar estado/departamento..." Callback=@FilterCallBack />
+            <Filter PlaceHolder="Search State..." Callback=@FilterCallBack />
             <GenericList MyList="states!">
                 <Body>
                     <Pagination CurrentPage="currentPage"
@@ -27,8 +27,8 @@ else
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Estado / Departamento</th>
-                                <th style="width:90px">Ciudades</th>
+                                <th>State</th>
+                                <th style="width:90px">Cities</th>
                                 <th style="width:168px"></th>
                             </tr>
                         </thead>
@@ -39,8 +39,8 @@ else
                                     <td><a href="/states/details/@state.Id">@state.Name</a></td>
                                     <td>@state.CitiesNumber</td>
                                     <td>
-                                        <a class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(state.Id, true))><i class="bi bi-pencil" /> Editar</a>
-                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(state))><i class="bi bi-trash" /> Borrar</button>
+                                        <a class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(state.Id, true))><i class="bi bi-pencil" /> Edit</a>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(state))><i class="bi bi-trash" /> Remove</button>
                                     </td>
                                 </tr>
                             }

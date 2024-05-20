@@ -1,54 +1,30 @@
-using Blazored.Modal;
-using Blazored.Modal.Services;
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
 using NgAir.Shared.Entities;
-using System.Net;
 
-namespace NgAir.FrontEnd.Pages.Countries
+namespace NgAir.FrontEnd.Pages.Products
 {
     [Authorize(Roles = "Admin")]
-    public partial class CountriesIndex
+    public partial class ProductsIndex
     {
         private int currentPage = 1;
         private int totalPages;
 
-        [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
+        [Inject] private IRepository Repository { get; set; } = null!;
+
+        public List<Product>? Products { get; set; }
 
         [Parameter, SupplyParameterFromQuery] public string Page { get; set; } = string.Empty;
         [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
         [Parameter, SupplyParameterFromQuery] public int RecordsNumber { get; set; } = 10;
-        [CascadingParameter] IModalService Modal { get; set; } = default!;
-
-        public List<Country>? Countries { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
-        }
-
-        private async Task ShowModalAsync(int id = 0, bool isEdit = false)
-        {
-            IModalReference modalReference;
-
-            if (isEdit)
-            {
-                modalReference = Modal.Show<CountryEdit>(string.Empty, new ModalParameters().Add("Id", id));
-            }
-            else
-            {
-                modalReference = Modal.Show<CountryCreate>();
-            }
-
-            var result = await modalReference.Result;
-            if (result.Confirmed)
-            {
-                await LoadAsync();
-            }
         }
 
         private async Task SelectedRecordsNumberAsync(int recordsnumber)
@@ -86,9 +62,9 @@ namespace NgAir.FrontEnd.Pages.Countries
             }
         }
 
-        private void ValidateRecordsNumber()
+        private void ValidateRecordsNumber(int recordsnumber)
         {
-            if (RecordsNumber == 0)
+            if (recordsnumber == 0)
             {
                 RecordsNumber = 10;
             }
@@ -96,80 +72,75 @@ namespace NgAir.FrontEnd.Pages.Countries
 
         private async Task<bool> LoadListAsync(int page)
         {
-            ValidateRecordsNumber();
-            var url = $"api/countries?page={page}&recordsnumber={RecordsNumber}";
+            ValidateRecordsNumber(RecordsNumber);
+            var url = $"api/products?page={page}&recordsnumber={RecordsNumber}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
             }
 
-            var responseHttp = await Repository.GetAsync<List<Country>>(url);
-            if (responseHttp.Error)
+            var response = await Repository.GetAsync<List<Product>>(url);
+            if (response.Error)
             {
-                var message = await responseHttp.GetErrorMessageAsync();
+                var message = await response.GetErrorMessageAsync();
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return false;
             }
-            Countries = responseHttp.Response;
+            Products = response.Response;
             return true;
         }
 
         private async Task LoadPagesAsync()
         {
-            var url = $"api/countries/totalPages?recordsnumber={RecordsNumber}";
+            ValidateRecordsNumber(RecordsNumber);
+            var url = $"api/products/totalPages?recordsnumber={RecordsNumber}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
             }
 
-            var responseHttp = await Repository.GetAsync<int>(url);
-            if (responseHttp.Error)
+            var response = await Repository.GetAsync<int>(url);
+            if (response.Error)
             {
-                var message = await responseHttp.GetErrorMessageAsync();
+                var message = await response.GetErrorMessageAsync();
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
-            totalPages = responseHttp.Response;
+            totalPages = response.Response;
         }
 
-        private async Task ApplyFilterAsync()
-        {
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
-        }
-
-        private async Task DeleteAsycn(Country country)
+        private async Task Delete(int productId)
         {
             var result = await SweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmation",
-                Text = $"Are you sure you want to erase the country: {country.Name}?",
+                Text = "Are you sure you want to delete the record?",
                 Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true,
+                ShowCancelButton = true
             });
             var confirm = string.IsNullOrEmpty(result.Value);
+
             if (confirm)
             {
                 return;
             }
 
-            var responseHttp = await Repository.DeleteAsync<Country>($"api/countries/{country.Id}");
+            var responseHttp = await Repository.DeleteAsync<Product>($"api/products/{productId}");
+
             if (responseHttp.Error)
             {
-                if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    NavigationManager.NavigateTo("/countries");
+                    NavigationManager.NavigateTo("/");
+                    return;
                 }
-                else
-                {
-                    var mensajeError = await responseHttp.GetErrorMessageAsync();
-                    await SweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-                }
+
+                var mensajeError = await responseHttp.GetErrorMessageAsync();
+                await SweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
                 return;
             }
 
-            await LoadAsync();
+            await LoadAsync(1);
             var toast = SweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,
@@ -178,6 +149,13 @@ namespace NgAir.FrontEnd.Pages.Countries
                 Timer = 3000
             });
             await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Record successfully deleted.");
+        }
+
+        private async Task ApplyFilterAsync()
+        {
+            int page = 1;
+            await LoadAsync(page);
+            await SelectedPageAsync(page);
         }
     }
 }
