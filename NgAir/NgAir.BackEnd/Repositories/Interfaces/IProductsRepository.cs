@@ -1,4 +1,8 @@
-﻿namespace NgAir.BackEnd.Repositories.Interfaces
+﻿using NgAir.Shared.DTOs;
+using NgAir.Shared.Entities;
+using NgAir.Shared.Responses;
+
+namespace NgAir.BackEnd.Repositories.Interfaces
 {
     public interface IProductsRepository
     {

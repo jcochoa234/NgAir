@@ -16,3 +16,4 @@ namespace NgAir.BackEnd.Repositories.Interfaces
 
         Task<IEnumerable<State>> GetComboAsync(int countryId);
     }
+}

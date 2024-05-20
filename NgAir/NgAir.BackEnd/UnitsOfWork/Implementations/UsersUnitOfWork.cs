@@ -1,4 +1,10 @@
-﻿namespace NgAir.BackEnd.UnitsOfWork.Implementations
+﻿using Microsoft.AspNetCore.Identity;
+using NgAir.BackEnd.Repositories.Interfaces;
+using NgAir.BackEnd.UnitsOfWork.Interfaces;
+using NgAir.Shared.DTOs;
+using NgAir.Shared.Entities;
+
+namespace NgAir.BackEnd.UnitsOfWork.Implementations
 {
     public class UsersUnitOfWork : IUsersUnitOfWork
     {

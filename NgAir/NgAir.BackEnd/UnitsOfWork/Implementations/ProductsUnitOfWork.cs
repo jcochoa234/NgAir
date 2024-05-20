@@ -1,4 +1,10 @@
-﻿namespace NgAir.BackEnd.UnitsOfWork.Implementations
+﻿using NgAir.BackEnd.Repositories.Interfaces;
+using NgAir.BackEnd.UnitsOfWork.Interfaces;
+using NgAir.Shared.DTOs;
+using NgAir.Shared.Entities;
+using NgAir.Shared.Responses;
+
+namespace NgAir.BackEnd.UnitsOfWork.Implementations
 {
     public class ProductsUnitOfWork : GenericUnitOfWork<Product>, IProductsUnitOfWork
     {
@@ -25,3 +31,4 @@
 
         public async Task<ActionResponse<Product>> UpdateFullAsync(ProductDTO productDTO) => await _productsRepository.UpdateFullAsync(productDTO);
     }
+}

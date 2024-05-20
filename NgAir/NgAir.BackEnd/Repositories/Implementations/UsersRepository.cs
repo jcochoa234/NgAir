@@ -1,4 +1,11 @@
-﻿namespace NgAir.BackEnd.Repositories.Implementations
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using NgAir.BackEnd.Data;
+using NgAir.BackEnd.Repositories.Interfaces;
+using NgAir.Shared.DTOs;
+using NgAir.Shared.Entities;
+
+namespace NgAir.BackEnd.Repositories.Implementations
 {
     public class UsersRepository : IUsersRepository
     {

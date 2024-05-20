@@ -1,4 +1,5 @@
-﻿using NgAir.BackEnd.UnitsOfWork.Interfaces;
+﻿using NgAir.BackEnd.Repositories.Interfaces;
+using NgAir.BackEnd.UnitsOfWork.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
 using NgAir.Shared.Responses;
@@ -20,5 +21,4 @@ namespace NgAir.BackEnd.UnitsOfWork.Implementations
 
         public async Task<IEnumerable<City>> GetComboAsync(int stateId) => await _citiesRepository.GetComboAsync(stateId);
     }
-}
 }

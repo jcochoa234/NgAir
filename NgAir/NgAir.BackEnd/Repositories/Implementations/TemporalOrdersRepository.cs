@@ -1,4 +1,11 @@
-﻿namespace NgAir.BackEnd.Repositories.Implementations
+﻿using Microsoft.EntityFrameworkCore;
+using NgAir.BackEnd.Data;
+using NgAir.BackEnd.Repositories.Interfaces;
+using NgAir.Shared.DTOs;
+using NgAir.Shared.Entities;
+using NgAir.Shared.Responses;
+
+namespace NgAir.BackEnd.Repositories.Implementations
 {
     public class TemporalOrdersRepository : GenericRepository<TemporalOrder>, ITemporalOrdersRepository
     {
