@@ -58,7 +58,8 @@ else
                         <div class="mb-3">
                             <label>Quantity:</label>
                             <div>
-                                <InputNumber class="form-control" @bind-Value="@TemporalOrderDTO.Quantity" />
+                                @* <InputNumber class="form-control" @bind-Value="@TemporalOrderDTO.Quantity" /> *@
+                                <Microsoft.AspNetCore.Components.InputNumber class="form-control" @Microsoft.AspNetCore.Components.bind-Value="@TemporalOrderDTO.Quantity" />
                                 <ValidationMessage For="@(() => TemporalOrderDTO.Quantity)" />
                             </div>
                             <label>Remarks:</label>
