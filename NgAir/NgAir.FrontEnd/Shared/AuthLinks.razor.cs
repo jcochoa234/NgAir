@@ -1,6 +1,7 @@
 using Blazored.Modal.Services;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using NgAir.FrontEnd.Pages.Auth;
 
 namespace NgAir.FrontEnd.Shared
 {
@@ -25,8 +26,7 @@ namespace NgAir.FrontEnd.Shared
 
         private void ShowModal()
         {
-            //Modal.Show<Login>();
-            //TODO:
+            Modal.Show<Login>();
         }
     }
 }
