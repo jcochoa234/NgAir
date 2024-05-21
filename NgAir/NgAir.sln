@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NgAir.FrontEnd", "NgAir.FrontEnd\NgAir.FrontEnd.csproj", "{E6ADAE61-4AAC-4E3C-9ACC-2C5AD62E8EEE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NgAir.BackEnd", "NgAir.BackEnd\NgAir.BackEnd.csproj", "{5F41726C-1DBB-4F96-BDB8-99C4A726F92A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NgAir.Shared", "NgAir.Shared\NgAir.Shared.csproj", "{C0866F73-9C8E-4681-97FD-98974B6B511B}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E6ADAE61-4AAC-4E3C-9ACC-2C5AD62E8EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6ADAE61-4AAC-4E3C-9ACC-2C5AD62E8EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6ADAE61-4AAC-4E3C-9ACC-2C5AD62E8EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6ADAE61-4AAC-4E3C-9ACC-2C5AD62E8EEE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5F41726C-1DBB-4F96-BDB8-99C4A726F92A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5F41726C-1DBB-4F96-BDB8-99C4A726F92A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F41726C-1DBB-4F96-BDB8-99C4A726F92A}.Release|Any CPU.ActiveCfg = Release|Any CPU
