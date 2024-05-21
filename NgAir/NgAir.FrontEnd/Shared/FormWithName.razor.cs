@@ -1,9 +1,9 @@
+using CurrieTechnologies.Razor.SweetAlert2;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components;
-using System.Threading.Tasks;
 using NgAir.Shared.Interfaces;
-using CurrieTechnologies.Razor.SweetAlert2;
+using System.Threading.Tasks;
 
 namespace NgAir.FrontEnd.Shared
 {
@@ -18,10 +18,10 @@ namespace NgAir.FrontEnd.Shared
         [Inject] public SweetAlertService SweetAlertService { get; set; } = null!;
         public bool FormPostedSuccessfully { get; set; }
 
-        protected override void OnInitialized()
-        {
-            editContext = new(Model);
-        }
+        //protected override void OnInitialized()
+        //{
+        //    editContext = new(Model);
+        //}
 
         private async Task OnBeforeInternalNavigation(LocationChangingContext context)
         {
