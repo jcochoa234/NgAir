@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NgAir.Shared", "NgAir.Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NgAir.Tests", "NgAir.Tests\NgAir.Tests.csproj", "{A81E83FF-7FC4-4998-8DE2-CDE0F08DE770}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NgAir.FrontEnd", "NgAir.FrontEnd\NgAir.FrontEnd.csproj", "{70BB0703-20A3-4FD8-ACF5-2E8CAF8EAF45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A81E83FF-7FC4-4998-8DE2-CDE0F08DE770}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A81E83FF-7FC4-4998-8DE2-CDE0F08DE770}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A81E83FF-7FC4-4998-8DE2-CDE0F08DE770}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70BB0703-20A3-4FD8-ACF5-2E8CAF8EAF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70BB0703-20A3-4FD8-ACF5-2E8CAF8EAF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70BB0703-20A3-4FD8-ACF5-2E8CAF8EAF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70BB0703-20A3-4FD8-ACF5-2E8CAF8EAF45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

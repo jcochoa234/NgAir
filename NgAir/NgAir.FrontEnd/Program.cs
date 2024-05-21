@@ -1,28 +1,30 @@
-using Blazored.Modal;
-using CurrieTechnologies.Razor.SweetAlert2;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using MudBlazor.Services;
-using NgAir.FrontEnd;
-using NgAir.FrontEnd.AuthenticationProviderJWT;
-using NgAir.FrontEnd.Repositories;
+using AntDesign.ProLayout;
 using NgAir.FrontEnd.Services;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
+namespace NgAir.FrontEnd
+{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.RootComponents.Add<App>("#app");
 
-builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7278/") });
-builder.Services.AddScoped<IRepository, Repository>();
-builder.Services.AddSweetAlert2();
-builder.Services.AddAuthorizationCore();
-builder.Services.AddBlazoredModal();
-builder.Services.AddMudServices();
-builder.Services.AddAntDesign();
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddAntDesign();
+            builder.Services.Configure<ProSettings>(builder.Configuration.GetSection("ProSettings"));
+            builder.Services.AddScoped<IChartService, ChartService>();
+            builder.Services.AddScoped<IProjectService, ProjectService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IProfileService, ProfileService>();
 
-builder.Services.AddScoped<AuthenticationProviderJWT>();
-builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProviderJWT>(x => x.GetRequiredService<AuthenticationProviderJWT>());
-builder.Services.AddScoped<ILoginService, AuthenticationProviderJWT>(x => x.GetRequiredService<AuthenticationProviderJWT>());
-
-await builder.Build().RunAsync();
+            await builder.Build().RunAsync();
+        }
+    }
+}
