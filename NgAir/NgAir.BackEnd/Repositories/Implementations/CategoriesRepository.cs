@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NgAir.BackEnd.Data;
 using NgAir.BackEnd.Helpers;
+using NgAir.BackEnd.Paging;
 using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
@@ -53,12 +54,20 @@ namespace NgAir.BackEnd.Repositories.Implementations
             }
 
             double count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
+            int totalPages = (int)Math.Ceiling(count / pagination.PageSize);
             return new ActionResponse<int>
             {
                 WasSuccess = true,
                 Result = totalPages
             };
+        }
+
+        public async Task<PagedList<Category>> GetAsync3(PaginationDTO pagination)
+        {
+            var categories = await _context.Categories.ToListAsync();
+            var page = PagedList<Category>.ToPagedList(categories, pagination);
+
+            return page;
         }
     }
 }

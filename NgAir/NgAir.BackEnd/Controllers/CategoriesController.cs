@@ -29,6 +29,9 @@ namespace NgAir.BackEnd.Controllers
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
+
+            var rrr = await _categoriesUnitOfWork.GetAsync3(pagination);
+
             var response = await _categoriesUnitOfWork.GetAsync(pagination);
             if (response.WasSuccess)
             {

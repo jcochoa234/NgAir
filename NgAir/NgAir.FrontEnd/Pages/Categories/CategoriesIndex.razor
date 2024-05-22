@@ -46,8 +46,8 @@
 
 <Table @ref="table"
     Title="Categories"
-       TItem="WeatherForecast"
-       DataSource="@forecasts"
+       TItem="Category"
+       DataSource="@Categories"
        Total="_total"
        @bind-PageIndex="_pageIndex"
        @bind-PageSize="_pageSize"
@@ -58,13 +58,13 @@
       >
   <Selection Key="@(context.Id.ToString())" />
   <AntDesign.PropertyColumn Property="c=>c.Id" Sortable />
-    <AntDesign.PropertyColumn Property="c=>c.Date" Format="yyyy-MM-dd" Sortable />
-    <AntDesign.PropertyColumn Property="c=>c.TemperatureC" Sortable />
-    <AntDesign.PropertyColumn Title="Temp. (F)" Property="c=>c.TemperatureF" />
-    <AntDesign.PropertyColumn Title="Hot" Property="c=>c.Hot">
+@*     <AntDesign.PropertyColumn Property="c=>c.Date" Format="yyyy-MM-dd" Sortable /> *@
+    <AntDesign.PropertyColumn Property="c=>c.Name" Sortable />
+  @*   <AntDesign.PropertyColumn Title="Temp. (F)" Property="c=>c.TemperatureF" /> *@
+  @*   <AntDesign.PropertyColumn Title="Hot" Property="c=>c.Hot">
     <Switch @bind-Value="@context.Hot"></Switch>
-  </AntDesign.PropertyColumn>
-    <AntDesign.PropertyColumn Property="c=>c.Summary" Sortable />
+  </AntDesign.PropertyColumn> *@
+@*     <AntDesign.PropertyColumn Property="c=>c.Summary" Sortable /> *@
   <ActionColumn Title="Action">
     <Space>
       <SpaceItem><Button Danger OnClick="()=>Delete(context.Id)">Delete</Button></SpaceItem>
@@ -83,7 +83,7 @@
 
   @foreach (var selected in selectedRows)
   {
-    <Tag @key="selected.Id" Closable OnClose="e=>RemoveSelection(selected.Id)">@selected.Id - @selected.Summary</Tag>
+   @*  <Tag @key="selected.Id" Closable OnClose="e=>RemoveSelection(selected.Id)">@selected.Id - @selected.Summary</Tag> *@
   }
 }
 
