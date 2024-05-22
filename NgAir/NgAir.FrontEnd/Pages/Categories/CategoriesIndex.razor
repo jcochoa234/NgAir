@@ -1,4 +1,7 @@
-﻿@page "/categories"
+﻿@using System.ComponentModel
+@using AntDesign.TableModels
+
+@page "/categories"
 
 <div class="card">
     <div class="card-header">
@@ -40,3 +43,49 @@
         </GenericList>
     </div>
 </div>
+
+<Table @ref="table"
+    Title="Categories"
+       TItem="WeatherForecast"
+       DataSource="@forecasts"
+       Total="_total"
+       @bind-PageIndex="_pageIndex"
+       @bind-PageSize="_pageSize"
+       @bind-SelectedRows="selectedRows"
+       OnChange="OnChange"
+       Size="TableSize.Small"
+       RowKey="x=>x.Id"
+      >
+  <Selection Key="@(context.Id.ToString())" />
+  <AntDesign.PropertyColumn Property="c=>c.Id" Sortable />
+    <AntDesign.PropertyColumn Property="c=>c.Date" Format="yyyy-MM-dd" Sortable />
+    <AntDesign.PropertyColumn Property="c=>c.TemperatureC" Sortable />
+    <AntDesign.PropertyColumn Title="Temp. (F)" Property="c=>c.TemperatureF" />
+    <AntDesign.PropertyColumn Title="Hot" Property="c=>c.Hot">
+    <Switch @bind-Value="@context.Hot"></Switch>
+  </AntDesign.PropertyColumn>
+    <AntDesign.PropertyColumn Property="c=>c.Summary" Sortable />
+  <ActionColumn Title="Action">
+    <Space>
+      <SpaceItem><Button Danger OnClick="()=>Delete(context.Id)">Delete</Button></SpaceItem>
+    </Space>
+  </ActionColumn>
+</Table>
+
+<br />
+<p>PageIndex: @_pageIndex | PageSize: @_pageSize | Total: @_total</p>
+
+<br />
+<h5>selections:</h5>
+@if (selectedRows != null && selectedRows.Any())
+{
+  <Button Danger Size="small" OnClick="@(e => { selectedRows = null; })">Clear</Button>
+
+  @foreach (var selected in selectedRows)
+  {
+    <Tag @key="selected.Id" Closable OnClose="e=>RemoveSelection(selected.Id)">@selected.Id - @selected.Summary</Tag>
+  }
+}
+
+<Button OnClick="()=> { _pageIndex--; }">Previous page</Button>
+<Button OnClick="()=> { _pageIndex++; }">Next Page</Button>

@@ -1,3 +1,5 @@
+using AntDesign;
+using AntDesign.TableModels;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using CurrieTechnologies.Razor.SweetAlert2;
@@ -5,7 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
 using NgAir.Shared.Entities;
+using System.ComponentModel;
 using System.Net;
+using System.Text.Json;
 
 namespace NgAir.FrontEnd.Pages.Categories
 {
@@ -26,8 +30,22 @@ namespace NgAir.FrontEnd.Pages.Categories
 
         public List<Category>? Categories { get; set; }
 
+
+
+        public WeatherForecast[] forecasts;
+
+        public IEnumerable<WeatherForecast> selectedRows;
+        public ITable table;
+
+        int _pageIndex = 1;
+        int _pageSize = 10;
+        int _total = 0;
+
         protected override async Task OnInitializedAsync()
         {
+            forecasts = await GetForecastAsync(1, 50);
+            _total = 50;
+
             await LoadAsync();
         }
 
@@ -178,6 +196,65 @@ namespace NgAir.FrontEnd.Pages.Categories
                 Timer = 3000
             });
             await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Record successfully deleted.");
+        }
+
+
+
+        public class WeatherForecast
+        {
+            public int Id { get; set; }
+
+            [DisplayName("Date")]
+            public DateTime? Date { get; set; }
+
+            [DisplayName("Temp. (C)")]
+            public int TemperatureC { get; set; }
+
+            [DisplayName("Summary")]
+            public string Summary { get; set; }
+
+            public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+
+            public bool Hot { get; set; }
+        }
+
+        private static readonly string[] Summaries = new[]
+        {
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+  };
+
+        public async Task OnChange(QueryModel<WeatherForecast> queryModel)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(queryModel));
+        }
+
+        public Task<WeatherForecast[]> GetForecastAsync(int pageIndex, int pageSize)
+        {
+            var rng = new Random();
+            return Task.FromResult(Enumerable.Range((pageIndex - 1) * pageSize + 1, pageSize).Select(index =>
+            {
+                var temperatureC = rng.Next(-20, 55);
+                return new WeatherForecast
+                {
+                    Id = index,
+                    Date = DateTime.Now.AddDays(index),
+                    TemperatureC = temperatureC,
+                    Summary = Summaries[rng.Next(Summaries.Length)],
+                    Hot = temperatureC > 30,
+                };
+            }).ToArray());
+        }
+
+        public void RemoveSelection(int id)
+        {
+            var selected = selectedRows.Where(x => x.Id != id);
+            selectedRows = selected;
+        }
+
+        private void Delete(int id)
+        {
+            forecasts = forecasts.Where(x => x.Id != id).ToArray();
+            _total = forecasts.Length;
         }
     }
 }
