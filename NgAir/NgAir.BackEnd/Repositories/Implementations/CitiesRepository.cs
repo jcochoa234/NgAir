@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NgAir.BackEnd.Data;
 using NgAir.BackEnd.Helpers;
+using NgAir.BackEnd.Paging;
 using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
@@ -15,14 +16,6 @@ namespace NgAir.BackEnd.Repositories.Implementations
         public CitiesRepository(DataContext context) : base(context)
         {
             _context = context;
-        }
-
-        public async Task<IEnumerable<City>> GetComboAsync(int stateId)
-        {
-            return await _context.Cities
-                .Where(c => c.StateId == stateId)
-                .OrderBy(c => c.Name)
-                .ToListAsync();
         }
 
         public override async Task<ActionResponse<IEnumerable<City>>> GetAsync(PaginationDTO pagination)
@@ -43,6 +36,26 @@ namespace NgAir.BackEnd.Repositories.Implementations
                     .OrderBy(x => x.Name)
                     .Paginate(pagination)
                     .ToListAsync()
+            };
+        }
+
+        public async Task<IEnumerable<City>> GetComboAsync(int stateId)
+        {
+            return await _context.Cities
+                .Where(c => c.StateId == stateId)
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
+
+        public override async Task<ActionResponse<IEnumerable<City>>> GetPagedAsync(PaginationDTO pagination)
+        {
+            var cities = await _context.Cities.ToListAsync();
+            var page = PagedList<City>.ToPagedList(cities, pagination);
+
+            return new ActionResponse<IEnumerable<City>>
+            {
+                WasSuccess = true,
+                Result = page
             };
         }
 

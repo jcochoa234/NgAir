@@ -19,6 +19,17 @@ namespace NgAir.BackEnd.Controllers
             _categoriesUnitOfWork = categoriesUnitOfWork;
         }
 
+        [HttpGet]
+        public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+        {
+            var response = await _categoriesUnitOfWork.GetAsync(pagination);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest();
+        }
+
         [AllowAnonymous]
         [HttpGet("combo")]
         public async Task<IActionResult> GetComboAsync()
@@ -26,13 +37,10 @@ namespace NgAir.BackEnd.Controllers
             return Ok(await _categoriesUnitOfWork.GetComboAsync());
         }
 
-        [HttpGet]
-        public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationDTO pagination)
         {
-
-            var rrr = await _categoriesUnitOfWork.GetAsync3(pagination);
-
-            var response = await _categoriesUnitOfWork.GetAsync(pagination);
+            var response = await _categoriesUnitOfWork.GetPagedAsync(pagination);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);

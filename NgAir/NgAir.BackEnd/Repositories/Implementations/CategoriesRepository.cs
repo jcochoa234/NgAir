@@ -18,13 +18,6 @@ namespace NgAir.BackEnd.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Category>> GetComboAsync()
-        {
-            return await _context.Categories
-                .OrderBy(c => c.Name)
-                .ToListAsync();
-        }
-
         public override async Task<ActionResponse<IEnumerable<Category>>> GetAsync(PaginationDTO pagination)
         {
             var queryable = _context.Categories.AsQueryable();
@@ -41,6 +34,25 @@ namespace NgAir.BackEnd.Repositories.Implementations
                     .OrderBy(x => x.Name)
                     .Paginate(pagination)
                     .ToListAsync()
+            };
+        }
+
+        public async Task<IEnumerable<Category>> GetComboAsync()
+        {
+            return await _context.Categories
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
+
+        public override async Task<ActionResponse<IEnumerable<Category>>> GetPagedAsync(PaginationDTO pagination)
+        {
+            var categories = await _context.Categories.ToListAsync();
+            var page = PagedList<Category>.ToPagedList(categories, pagination);
+
+            return new ActionResponse<IEnumerable<Category>>
+            {
+                WasSuccess = true,
+                Result = page
             };
         }
 
@@ -62,12 +74,5 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
-        public async Task<PagedList<Category>> GetAsync3(PaginationDTO pagination)
-        {
-            var categories = await _context.Categories.ToListAsync();
-            var page = PagedList<Category>.ToPagedList(categories, pagination);
-
-            return page;
-        }
     }
 }
