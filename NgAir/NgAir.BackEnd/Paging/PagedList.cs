@@ -1,4 +1,6 @@
-﻿namespace NgAir.BackEnd.Paging
+﻿using NgAir.Shared.DTOs;
+
+namespace NgAir.BackEnd.Paging
 {
     public class PagedList<T> : List<T>
     {
@@ -24,13 +26,13 @@
               .Take(pageSize).ToList();
             return new PagedList<T>(items, count, pageNumber, pageSize);
         }
-        //public static PagedList<T> ToPagedList(IEnumerable<T> source, PaginationDTO pagination)
-        //{
-        //    var count = source.Count();
-        //    var items = source
-        //      .Skip((pagination.PageNumber - 1) * pagination.PageSize)
-        //      .Take(pagination.PageSize).ToList();
-        //    return new PagedList<T>(items, count, pagination.PageNumber, pagination.PageSize);
-        //}
+        public static PagedList<T> ToPagedList(IEnumerable<T> source, PaginationDTO pagination)
+        {
+            var count = source.Count();
+            var items = source
+              .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+              .Take(pagination.PageSize).ToList();
+            return new PagedList<T>(items, count, pagination.PageNumber, pagination.PageSize);
+        }
     }
 }
