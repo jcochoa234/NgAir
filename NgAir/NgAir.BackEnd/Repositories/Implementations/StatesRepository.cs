@@ -94,7 +94,7 @@ namespace NgAir.BackEnd.Repositories.Implementations
             }
 
             double count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
+            int totalPages = (int)Math.Ceiling(count / pagination.PageSize);
             return new ActionResponse<int>
             {
                 WasSuccess = true,

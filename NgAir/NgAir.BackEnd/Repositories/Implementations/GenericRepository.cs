@@ -35,7 +35,7 @@ namespace NgAir.BackEnd.Repositories.Implementations
         {
             var queryable = _entity.AsQueryable();
             var count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling((double)count / pagination.RecordsNumber);
+            int totalPages = (int)Math.Ceiling((double)count / pagination.PageSize);
             return new ActionResponse<int>
             {
                 WasSuccess = true,

@@ -19,9 +19,9 @@ namespace NgAir.FrontEnd.Pages.Categories
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
-        [Parameter, SupplyParameterFromQuery] public string Page { get; set; } = string.Empty;
+        [Parameter, SupplyParameterFromQuery] public string PageNumber { get; set; } = string.Empty;
         [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
-        [Parameter, SupplyParameterFromQuery] public int RecordsNumber { get; set; } = 10;
+        [Parameter, SupplyParameterFromQuery] public int PageSize { get; set; } = 10;
         [CascadingParameter] IModalService Modal { get; set; } = default!;
 
         public List<Category>? Categories { get; set; }
@@ -51,12 +51,12 @@ namespace NgAir.FrontEnd.Pages.Categories
             }
         }
 
-        private async Task SelectedRecordsNumberAsync(int recordsnumber)
+        private async Task SelectedPageSizeAsync(int pageSize)
         {
-            RecordsNumber = recordsnumber;
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
+            PageSize = pageSize;
+            int pageNumber = 1;
+            await LoadAsync(pageNumber);
+            await SelectedPageNumberAsync(pageNumber);
         }
         private async Task FilterCallBack(string filter)
         {
@@ -65,30 +65,30 @@ namespace NgAir.FrontEnd.Pages.Categories
             StateHasChanged();
         }
 
-        private async Task SelectedPageAsync(int page)
+        private async Task SelectedPageNumberAsync(int pageNumber)
         {
-            if (!string.IsNullOrWhiteSpace(Page))
+            if (!string.IsNullOrWhiteSpace(PageNumber))
             {
-                page = Convert.ToInt32(Page);
+                pageNumber = Convert.ToInt32(PageNumber);
             }
 
-            currentPage = page;
-            await LoadAsync(page);
+            currentPage = pageNumber;
+            await LoadAsync(pageNumber);
         }
 
-        private async Task LoadAsync(int page = 1)
+        private async Task LoadAsync(int pageNumber = 1)
         {
-            var ok = await LoadListAsync(page);
+            var ok = await LoadListAsync(pageNumber);
             if (ok)
             {
                 await LoadPagesAsync();
             }
         }
 
-        private async Task<bool> LoadListAsync(int page)
+        private async Task<bool> LoadListAsync(int pageNumber)
         {
-            ValidateRecordsNumber();
-            var url = $"api/categories/?page={page}&recordsnumber={RecordsNumber}";
+            ValidatePageSize();
+            var url = $"api/categories/?pageNumber={pageNumber}&PageSize={PageSize}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
@@ -107,8 +107,8 @@ namespace NgAir.FrontEnd.Pages.Categories
 
         private async Task LoadPagesAsync()
         {
-            ValidateRecordsNumber();
-            var url = $"api/categories/totalPages?recordsnumber={RecordsNumber}";
+            ValidatePageSize();
+            var url = $"api/categories/totalPages?pageSize={PageSize}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
@@ -124,19 +124,19 @@ namespace NgAir.FrontEnd.Pages.Categories
             totalPages = responseHttp.Response;
         }
 
-        private void ValidateRecordsNumber()
+        private void ValidatePageSize()
         {
-            if (RecordsNumber == 0)
+            if (PageSize == 0)
             {
-                RecordsNumber = 10;
+                PageSize = 10;
             }
         }
 
         private async Task ApplyFilterAsync()
         {
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
+            int pageNumber = 1;
+            await LoadAsync(pageNumber);
+            await SelectedPageNumberAsync(pageNumber);
         }
 
         private async Task DeleteAsycn(Category category)
