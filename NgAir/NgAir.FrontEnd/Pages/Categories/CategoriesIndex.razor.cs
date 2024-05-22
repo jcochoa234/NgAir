@@ -1,5 +1,3 @@
-using AntDesign;
-using AntDesign.TableModels;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using CurrieTechnologies.Razor.SweetAlert2;
@@ -8,7 +6,6 @@ using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
 using NgAir.Shared.Entities;
 using System.Net;
-using System.Text.Json;
 
 namespace NgAir.FrontEnd.Pages.Categories
 {
@@ -30,21 +27,8 @@ namespace NgAir.FrontEnd.Pages.Categories
         public List<Category>? Categories { get; set; }
 
 
-
-        //public WeatherForecast[] forecasts;
-
-        public IEnumerable<Category> selectedRows;
-        public ITable table;
-
-        int _pageIndex = 1;
-        int _pageSize = 10;
-        int _total = 0;
-
         protected override async Task OnInitializedAsync()
         {
-            //forecasts = await GetForecastAsync(1, 50);
-            _total = 18;
-
             await LoadAsync();
         }
 
@@ -160,8 +144,8 @@ namespace NgAir.FrontEnd.Pages.Categories
         {
             var result = await SweetAlertService.FireAsync(new SweetAlertOptions
             {
-                Title = "Confirmation",
-                Text = $"Are you sure you want to delete the category: {category.Name}?",
+                Title = "Confirmación",
+                Text = $"¿Estas seguro de querer borrar la categoría: {category.Name}?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true,
             });
@@ -194,34 +178,7 @@ namespace NgAir.FrontEnd.Pages.Categories
                 ShowConfirmButton = true,
                 Timer = 3000
             });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Record successfully deleted.");
-        }
-
-
-
-
-
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        public async Task OnChange(QueryModel<Category> queryModel)
-        {
-            Console.WriteLine(JsonSerializer.Serialize(queryModel));
-        }
-
-
-        public void RemoveSelection(int id)
-        {
-            var selected = selectedRows.Where(x => x.Id != id);
-            selectedRows = selected;
-        }
-
-        private void Delete(int id)
-        {
-            //forecasts = forecasts.Where(x => x.Id != id).ToArray();
-            //_total = forecasts.Length;
+            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con éxito.");
         }
     }
 }
