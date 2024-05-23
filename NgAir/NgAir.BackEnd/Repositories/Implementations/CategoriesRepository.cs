@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NgAir.BackEnd.Data;
 using NgAir.BackEnd.Helpers;
+using NgAir.BackEnd.Paging;
 using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
@@ -15,13 +16,6 @@ namespace NgAir.BackEnd.Repositories.Implementations
         public CategoriesRepository(DataContext context) : base(context)
         {
             _context = context;
-        }
-
-        public async Task<IEnumerable<Category>> GetComboAsync()
-        {
-            return await _context.Categories
-                .OrderBy(c => c.Name)
-                .ToListAsync();
         }
 
         public override async Task<ActionResponse<IEnumerable<Category>>> GetAsync(PaginationDTO pagination)
@@ -43,6 +37,25 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
+        public async Task<IEnumerable<Category>> GetComboAsync()
+        {
+            return await _context.Categories
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
+
+        public async Task<ActionResponse<IEnumerable<Category>>> GetPagedAsync(PaginationDTO pagination)
+        {
+            var categories = await _context.Categories.ToListAsync();
+            var page = PagedList<Category>.ToPagedList(categories, pagination);
+
+            return new ActionResponse<IEnumerable<Category>>
+            {
+                WasSuccess = true,
+                Result = page
+            };
+        }
+
         public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
         {
             var queryable = _context.Categories.AsQueryable();
@@ -53,7 +66,7 @@ namespace NgAir.BackEnd.Repositories.Implementations
             }
 
             double count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
+            int totalPages = (int)Math.Ceiling(count / pagination.PageSize);
             return new ActionResponse<int>
             {
                 WasSuccess = true,

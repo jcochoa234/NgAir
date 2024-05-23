@@ -35,6 +35,18 @@ namespace NgAir.BackEnd.Controllers
             return BadRequest();
         }
 
+
+        [HttpGet("Paged")]
+        public virtual async Task<IActionResult> GetPagedAsync([FromQuery] PaginationDTO pagination)
+        {
+            var response = await _unitOfWork.GetPagedAsync(pagination);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest();
+        }
+
         [HttpGet("totalPages")]
         public virtual async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {

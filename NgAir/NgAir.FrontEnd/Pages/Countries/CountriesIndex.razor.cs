@@ -19,9 +19,9 @@ namespace NgAir.FrontEnd.Pages.Countries
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
-        [Parameter, SupplyParameterFromQuery] public string Page { get; set; } = string.Empty;
+        [Parameter, SupplyParameterFromQuery] public string PageNumber { get; set; } = string.Empty;
         [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
-        [Parameter, SupplyParameterFromQuery] public int RecordsNumber { get; set; } = 10;
+        [Parameter, SupplyParameterFromQuery] public int PageSize { get; set; } = 10;
         [CascadingParameter] IModalService Modal { get; set; } = default!;
 
         public List<Country>? Countries { get; set; }
@@ -51,12 +51,12 @@ namespace NgAir.FrontEnd.Pages.Countries
             }
         }
 
-        private async Task SelectedRecordsNumberAsync(int recordsnumber)
+        private async Task SelectedPageSizeAsync(int pageSize)
         {
-            RecordsNumber = recordsnumber;
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
+            PageSize = pageSize;
+            int pageNumber = 1;
+            await LoadAsync(pageNumber);
+            await SelectedPageNumberAsync(pageNumber);
         }
 
         private async Task FilterCallBack(string filter)
@@ -66,38 +66,43 @@ namespace NgAir.FrontEnd.Pages.Countries
             StateHasChanged();
         }
 
-        private async Task SelectedPageAsync(int page)
+        private async Task SelectedPageNumberAsync(int pageNumber)
         {
-            currentPage = page;
-            await LoadAsync(page);
-        }
-
-        private async Task LoadAsync(int page = 1)
-        {
-            if (!string.IsNullOrWhiteSpace(Page))
+            if (!string.IsNullOrWhiteSpace(PageNumber))
             {
-                page = Convert.ToInt32(Page);
+                pageNumber = Convert.ToInt32(PageNumber);
             }
 
-            var ok = await LoadListAsync(page);
+            currentPage = pageNumber;
+            await LoadAsync(pageNumber);
+        }
+
+        private async Task LoadAsync(int pageNumber = 1)
+        {
+            if (!string.IsNullOrWhiteSpace(PageNumber))
+            {
+                pageNumber = Convert.ToInt32(PageNumber);
+            }
+
+            var ok = await LoadListAsync(pageNumber);
             if (ok)
             {
                 await LoadPagesAsync();
             }
         }
 
-        private void ValidateRecordsNumber()
+        private void ValidatePageSize()
         {
-            if (RecordsNumber == 0)
+            if (PageSize == 0)
             {
-                RecordsNumber = 10;
+                PageSize = 10;
             }
         }
 
-        private async Task<bool> LoadListAsync(int page)
+        private async Task<bool> LoadListAsync(int pageNumber)
         {
-            ValidateRecordsNumber();
-            var url = $"api/countries?page={page}&recordsnumber={RecordsNumber}";
+            ValidatePageSize();
+            var url = $"api/countries?pageNumber={pageNumber}&PageSize={PageSize}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
@@ -116,7 +121,7 @@ namespace NgAir.FrontEnd.Pages.Countries
 
         private async Task LoadPagesAsync()
         {
-            var url = $"api/countries/totalPages?recordsnumber={RecordsNumber}";
+            var url = $"api/countries/totalPages?pageSize={PageSize}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
@@ -134,9 +139,9 @@ namespace NgAir.FrontEnd.Pages.Countries
 
         private async Task ApplyFilterAsync()
         {
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
+            int pageNumber = 1;
+            await LoadAsync(pageNumber);
+            await SelectedPageNumberAsync(pageNumber);
         }
 
         private async Task DeleteAsycn(Country country)

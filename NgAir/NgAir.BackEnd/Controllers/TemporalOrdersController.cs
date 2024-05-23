@@ -19,6 +19,17 @@ namespace NgAir.BackEnd.Controllers
             _temporalOrdersUnitOfWork = temporalOrdersUnitOfWork;
         }
 
+        [HttpGet("my")]
+        public override async Task<IActionResult> GetAsync()
+        {
+            var action = await _temporalOrdersUnitOfWork.GetAsync(User.Identity!.Name!);
+            if (action.WasSuccess)
+            {
+                return Ok(action.Result);
+            }
+            return BadRequest(action.Message);
+        }
+
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
@@ -30,15 +41,15 @@ namespace NgAir.BackEnd.Controllers
             return NotFound(response.Message);
         }
 
-        [HttpPut("full")]
-        public async Task<IActionResult> PutFullAsync(TemporalOrderDTO temporalOrderDTO)
+        [HttpGet("count")]
+        public async Task<IActionResult> GetCountAsync()
         {
-            var action = await _temporalOrdersUnitOfWork.PutFullAsync(temporalOrderDTO);
+            var action = await _temporalOrdersUnitOfWork.GetCountAsync(User.Identity!.Name!);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
             }
-            return NotFound(action.Message);
+            return BadRequest(action.Message);
         }
 
         [HttpPost("full")]
@@ -52,26 +63,16 @@ namespace NgAir.BackEnd.Controllers
             return BadRequest(action.Message);
         }
 
-        [HttpGet("my")]
-        public override async Task<IActionResult> GetAsync()
+        [HttpPut("full")]
+        public async Task<IActionResult> PutFullAsync(TemporalOrderDTO temporalOrderDTO)
         {
-            var action = await _temporalOrdersUnitOfWork.GetAsync(User.Identity!.Name!);
+            var action = await _temporalOrdersUnitOfWork.PutFullAsync(temporalOrderDTO);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
             }
-            return BadRequest(action.Message);
+            return NotFound(action.Message);
         }
 
-        [HttpGet("count")]
-        public async Task<IActionResult> GetCountAsync()
-        {
-            var action = await _temporalOrdersUnitOfWork.GetCountAsync(User.Identity!.Name!);
-            if (action.WasSuccess)
-            {
-                return Ok(action.Result);
-            }
-            return BadRequest(action.Message);
-        }
     }
 }

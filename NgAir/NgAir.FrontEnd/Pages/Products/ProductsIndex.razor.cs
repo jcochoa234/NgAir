@@ -18,21 +18,21 @@ namespace NgAir.FrontEnd.Pages.Products
 
         public List<Product>? Products { get; set; }
 
-        [Parameter, SupplyParameterFromQuery] public string Page { get; set; } = string.Empty;
+        [Parameter, SupplyParameterFromQuery] public string PageNumber { get; set; } = string.Empty;
         [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
-        [Parameter, SupplyParameterFromQuery] public int RecordsNumber { get; set; } = 10;
+        [Parameter, SupplyParameterFromQuery] public int PageSize { get; set; } = 10;
 
         protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
         }
 
-        private async Task SelectedRecordsNumberAsync(int recordsnumber)
+        private async Task SelectedPageSizeAsync(int pageSize)
         {
-            RecordsNumber = recordsnumber;
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
+            PageSize = pageSize;
+            int pageNumber = 1;
+            await LoadAsync(pageNumber);
+            await SelectedPageNumberAsync(pageNumber);
         }
 
         private async Task FilterCallBack(string filter)
@@ -42,38 +42,43 @@ namespace NgAir.FrontEnd.Pages.Products
             StateHasChanged();
         }
 
-        private async Task SelectedPageAsync(int page)
+        private async Task SelectedPageNumberAsync(int pageNumber)
         {
-            currentPage = page;
-            await LoadAsync(page);
-        }
-
-        private async Task LoadAsync(int page = 1)
-        {
-            if (!string.IsNullOrWhiteSpace(Page))
+            if (!string.IsNullOrWhiteSpace(PageNumber))
             {
-                page = Convert.ToInt32(Page);
+                pageNumber = Convert.ToInt32(PageNumber);
             }
 
-            var ok = await LoadListAsync(page);
+            currentPage = pageNumber;
+            await LoadAsync(pageNumber);
+        }
+
+        private async Task LoadAsync(int pageNumber = 1)
+        {
+            if (!string.IsNullOrWhiteSpace(PageNumber))
+            {
+                pageNumber = Convert.ToInt32(PageNumber);
+            }
+
+            var ok = await LoadListAsync(pageNumber);
             if (ok)
             {
                 await LoadPagesAsync();
             }
         }
 
-        private void ValidateRecordsNumber(int recordsnumber)
+        private void ValidatePageSize(int pageSize)
         {
-            if (recordsnumber == 0)
+            if (pageSize == 0)
             {
-                RecordsNumber = 10;
+                PageSize = 10;
             }
         }
 
-        private async Task<bool> LoadListAsync(int page)
+        private async Task<bool> LoadListAsync(int pageNumber)
         {
-            ValidateRecordsNumber(RecordsNumber);
-            var url = $"api/products?page={page}&recordsnumber={RecordsNumber}";
+            ValidatePageSize(PageSize);
+            var url = $"api/products?pageNumber={pageNumber}&PageSize={PageSize}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
@@ -92,8 +97,8 @@ namespace NgAir.FrontEnd.Pages.Products
 
         private async Task LoadPagesAsync()
         {
-            ValidateRecordsNumber(RecordsNumber);
-            var url = $"api/products/totalPages?recordsnumber={RecordsNumber}";
+            ValidatePageSize(PageSize);
+            var url = $"api/products/totalPages?pageSize={PageSize}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
@@ -153,9 +158,9 @@ namespace NgAir.FrontEnd.Pages.Products
 
         private async Task ApplyFilterAsync()
         {
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
+            int pageNumber = 1;
+            await LoadAsync(pageNumber);
+            await SelectedPageNumberAsync(pageNumber);
         }
     }
 }

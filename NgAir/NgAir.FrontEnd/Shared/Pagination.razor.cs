@@ -10,8 +10,8 @@ namespace NgAir.FrontEnd.Shared
 
         [Parameter] public int CurrentPage { get; set; } = 1;
         [Parameter] public int Radio { get; set; } = 10;
-        [Parameter] public EventCallback<int> RecordsNumber { get; set; }
-        [Parameter] public EventCallback<int> SelectedPage { get; set; }
+        [Parameter] public EventCallback<int> PageSize { get; set; }
+        [Parameter] public EventCallback<int> SelectedPageNumber { get; set; }
         [Parameter] public int TotalPages { get; set; }
         [Parameter] public bool IsHome { get; set; } = false;
 
@@ -101,23 +101,23 @@ namespace NgAir.FrontEnd.Shared
             }
         }
 
-        private async Task InternalRecordsNumberSelected(ChangeEventArgs e)
+        private async Task InternalPageSizeSelected(ChangeEventArgs e)
         {
             if (e.Value != null)
             {
                 selectedOptionValue = Convert.ToInt32(e.Value.ToString());
             }
-            await RecordsNumber.InvokeAsync(selectedOptionValue);
+            await PageSize.InvokeAsync(selectedOptionValue);
         }
 
-        private async Task InternalSelectedPage(PageModel pageModel)
+        private async Task InternalSelectedPageNumber(PageModel pageModel)
         {
             if (pageModel.Page == CurrentPage || pageModel.Page == 0)
             {
                 return;
             }
 
-            await SelectedPage.InvokeAsync(pageModel.Page);
+            await SelectedPageNumber.InvokeAsync(pageModel.Page);
         }
 
         private class OptionModel

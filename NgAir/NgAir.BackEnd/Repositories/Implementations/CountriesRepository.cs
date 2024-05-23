@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NgAir.BackEnd.Data;
 using NgAir.BackEnd.Helpers;
+using NgAir.BackEnd.Paging;
 using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
@@ -29,46 +30,6 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
-        public override async Task<ActionResponse<IEnumerable<Country>>> GetAsync(PaginationDTO pagination)
-        {
-            var queryable = _context.Countries
-                .Include(c => c.States)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
-            {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
-            }
-
-            return new ActionResponse<IEnumerable<Country>>
-            {
-                WasSuccess = true,
-                Result = await queryable
-                    .OrderBy(x => x.Name)
-                    .Paginate(pagination)
-                    .ToListAsync()
-            };
-        }
-
-        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
-        {
-            var queryable = _context.Countries.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
-            {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
-            }
-
-            double count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
-            return new ActionResponse<int>
-            {
-                WasSuccess = true,
-                Result = totalPages
-            };
-        }
-
-
         public override async Task<ActionResponse<Country>> GetAsync(int id)
         {
             var country = await _context.Countries
@@ -92,11 +53,64 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
+        public override async Task<ActionResponse<IEnumerable<Country>>> GetAsync(PaginationDTO pagination)
+        {
+            var queryable = _context.Countries
+                .Include(c => c.States)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            return new ActionResponse<IEnumerable<Country>>
+            {
+                WasSuccess = true,
+                Result = await queryable
+                    .OrderBy(x => x.Name)
+                    .Paginate(pagination)
+                    .ToListAsync()
+            };
+        }
+
+
         public async Task<IEnumerable<Country>> GetComboAsync()
         {
             return await _context.Countries
                 .OrderBy(c => c.Name)
                 .ToListAsync();
         }
+
+        public async Task<ActionResponse<IEnumerable<Country>>> GetPagedAsync(PaginationDTO pagination)
+        {
+            var countries = await _context.Countries.ToListAsync();
+            var page = PagedList<Country>.ToPagedList(countries, pagination);
+
+            return new ActionResponse<IEnumerable<Country>>
+            {
+                WasSuccess = true,
+                Result = page
+            };
+        }
+
+        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
+        {
+            var queryable = _context.Countries.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            double count = await queryable.CountAsync();
+            int totalPages = (int)Math.Ceiling(count / pagination.PageSize);
+            return new ActionResponse<int>
+            {
+                WasSuccess = true,
+                Result = totalPages
+            };
+        }
+
     }
 }
