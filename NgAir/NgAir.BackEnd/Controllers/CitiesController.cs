@@ -19,6 +19,17 @@ namespace NgAir.BackEnd.Controllers
             _citiesUnitOfWork = citiesUnitOfWork;
         }
 
+        [HttpGet]
+        public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+        {
+            var response = await _citiesUnitOfWork.GetAsync(pagination);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest();
+        }
+
         [AllowAnonymous]
         [HttpGet("combo/{stateId:int}")]
         public async Task<IActionResult> GetComboAsync(int stateId)
@@ -26,10 +37,10 @@ namespace NgAir.BackEnd.Controllers
             return Ok(await _citiesUnitOfWork.GetComboAsync(stateId));
         }
 
-        [HttpGet]
-        public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationDTO pagination)
         {
-            var response = await _citiesUnitOfWork.GetAsync(pagination);
+            var response = await _citiesUnitOfWork.GetPagedAsync(pagination);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);

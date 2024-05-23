@@ -19,29 +19,10 @@ namespace NgAir.BackEnd.Controllers
             _countriesUnitOfWork = countriesUnitOfWork;
         }
 
-        [AllowAnonymous]
-        [HttpGet("combo")]
-        public async Task<IActionResult> GetComboAsync()
-        {
-            return Ok(await _countriesUnitOfWork.GetComboAsync());
-        }
-
         [HttpGet("full")]
         public override async Task<IActionResult> GetAsync()
         {
             var response = await _countriesUnitOfWork.GetAsync();
-            if (response.WasSuccess)
-            {
-                return Ok(response.Result);
-            }
-            return BadRequest();
-        }
-
-
-        [HttpGet]
-        public override async Task<IActionResult> GetAsync(PaginationDTO pagination)
-        {
-            var response = await _countriesUnitOfWork.GetAsync(pagination);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -60,6 +41,38 @@ namespace NgAir.BackEnd.Controllers
             return NotFound(response.Message);
         }
 
+
+        [HttpGet]
+        public override async Task<IActionResult> GetAsync(PaginationDTO pagination)
+        {
+            var response = await _countriesUnitOfWork.GetAsync(pagination);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest();
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<IActionResult> GetComboAsync()
+        {
+            return Ok(await _countriesUnitOfWork.GetComboAsync());
+        }
+
+
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationDTO pagination)
+        {
+            var response = await _countriesUnitOfWork.GetPagedAsync(pagination);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest();
+        }
+
         [HttpGet("totalPages")]
         public override async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
@@ -70,5 +83,6 @@ namespace NgAir.BackEnd.Controllers
             }
             return BadRequest();
         }
+
     }
 }

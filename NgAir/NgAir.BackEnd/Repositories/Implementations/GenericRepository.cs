@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NgAir.BackEnd.Data;
 using NgAir.BackEnd.Helpers;
+using NgAir.BackEnd.Paging;
 using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Responses;
@@ -16,31 +17,6 @@ namespace NgAir.BackEnd.Repositories.Implementations
         {
             _context = context;
             _entity = _context.Set<T>();
-        }
-
-        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(PaginationDTO pagination)
-        {
-            var queryable = _entity.AsQueryable();
-
-            return new ActionResponse<IEnumerable<T>>
-            {
-                WasSuccess = true,
-                Result = await queryable
-                    .Paginate(pagination)
-                    .ToListAsync()
-            };
-        }
-
-        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
-        {
-            var queryable = _entity.AsQueryable();
-            var count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling((double)count / pagination.PageSize);
-            return new ActionResponse<int>
-            {
-                WasSuccess = true,
-                Result = totalPages
-            };
         }
 
         public virtual async Task<ActionResponse<T>> AddAsync(T entity)
@@ -108,6 +84,15 @@ namespace NgAir.BackEnd.Repositories.Implementations
             }
         }
 
+        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync()
+        {
+            return new ActionResponse<IEnumerable<T>>
+            {
+                WasSuccess = true,
+                Result = await _entity.ToListAsync()
+            };
+        }
+
         public virtual async Task<ActionResponse<T>> GetAsync(int id)
         {
             var row = await _entity.FindAsync(id);
@@ -127,12 +112,40 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
-        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync()
+        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(PaginationDTO pagination)
         {
+            var queryable = _entity.AsQueryable();
+
             return new ActionResponse<IEnumerable<T>>
             {
                 WasSuccess = true,
-                Result = await _entity.ToListAsync()
+                Result = await queryable
+                    .Paginate(pagination)
+                    .ToListAsync()
+            };
+        }
+
+        public virtual async Task<ActionResponse<IEnumerable<T>>> GetPagedAsync(PaginationDTO pagination)
+        {
+            var queryable = _entity.AsQueryable();
+            var page = PagedList<T>.ToPagedList(queryable, pagination);
+
+            return new ActionResponse<IEnumerable<T>>
+            {
+                WasSuccess = true,
+                Result = page
+            };
+        }
+
+        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
+        {
+            var queryable = _entity.AsQueryable();
+            var count = await queryable.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)count / pagination.PageSize);
+            return new ActionResponse<int>
+            {
+                WasSuccess = true,
+                Result = totalPages
             };
         }
 
