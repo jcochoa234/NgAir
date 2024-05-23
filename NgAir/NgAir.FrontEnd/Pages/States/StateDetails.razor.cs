@@ -23,9 +23,9 @@ namespace NgAir.FrontEnd.Pages.States
         [Inject] private IRepository Repository { get; set; } = null!;
 
         [Parameter] public int StateId { get; set; }
-        [Parameter, SupplyParameterFromQuery] public string Page { get; set; } = string.Empty;
+        [Parameter, SupplyParameterFromQuery] public string PageNumber { get; set; } = string.Empty;
         [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
-        [Parameter, SupplyParameterFromQuery] public int RecordsNumber { get; set; } = 10;
+        [Parameter, SupplyParameterFromQuery] public int PageSize { get; set; } = 10;
         [CascadingParameter] IModalService Modal { get; set; } = default!;
 
         protected override async Task OnInitializedAsync()
@@ -53,12 +53,12 @@ namespace NgAir.FrontEnd.Pages.States
             }
         }
 
-        private async Task SelectedRecordsNumberAsync(int recordsnumber)
+        private async Task SelectedPageSizeAsync(int pageSize)
         {
-            RecordsNumber = recordsnumber;
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
+            PageSize = pageSize;
+            int pageNumber = 1;
+            await LoadAsync(pageNumber);
+            await SelectedPageNumberAsync(pageNumber);
         }
 
         private async Task FilterCallBack(string filter)
@@ -67,23 +67,23 @@ namespace NgAir.FrontEnd.Pages.States
             await ApplyFilterAsync();
             StateHasChanged();
         }
-        private async Task SelectedPageAsync(int page)
+        private async Task SelectedPageNumberAsync(int pageNumber)
         {
-            if (!string.IsNullOrWhiteSpace(Page))
+            if (!string.IsNullOrWhiteSpace(PageNumber))
             {
-                page = Convert.ToInt32(Page);
+                pageNumber = Convert.ToInt32(PageNumber);
             }
 
-            currentPage = page;
-            await LoadAsync(page);
+            currentPage = pageNumber;
+            await LoadAsync(pageNumber);
         }
 
-        private async Task LoadAsync(int page = 1)
+        private async Task LoadAsync(int pageNumber = 1)
         {
             var ok = await LoadStateAsync();
             if (ok)
             {
-                ok = await LoadCitiesAsync(page);
+                ok = await LoadCitiesAsync(pageNumber);
                 if (ok)
                 {
                     await LoadPagesAsync();
@@ -91,18 +91,18 @@ namespace NgAir.FrontEnd.Pages.States
             }
         }
 
-        private void ValidateRecordsNumber()
+        private void ValidatePageSize()
         {
-            if (RecordsNumber == 0)
+            if (PageSize == 0)
             {
-                RecordsNumber = 10;
+                PageSize = 10;
             }
         }
 
         private async Task LoadPagesAsync()
         {
-            ValidateRecordsNumber();
-            var url = $"api/cities/totalPages?id={StateId}&recordsnumber={RecordsNumber}";
+            ValidatePageSize();
+            var url = $"api/cities/totalPages?id={StateId}&PageSize={PageSize}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
@@ -118,10 +118,10 @@ namespace NgAir.FrontEnd.Pages.States
             totalPages = responseHttp.Response;
         }
 
-        private async Task<bool> LoadCitiesAsync(int page)
+        private async Task<bool> LoadCitiesAsync(int pageNumber)
         {
-            ValidateRecordsNumber();
-            var url = $"api/cities?id={StateId}&page={page}&recordsnumber={RecordsNumber}";
+            ValidatePageSize();
+            var url = $"api/cities?id={StateId}&pageNumber={pageNumber}&PageSize={PageSize}";
             if (!string.IsNullOrEmpty(Filter))
             {
                 url += $"&filter={Filter}";
@@ -140,9 +140,9 @@ namespace NgAir.FrontEnd.Pages.States
 
         private async Task ApplyFilterAsync()
         {
-            int page = 1;
-            await LoadAsync(page);
-            await SelectedPageAsync(page);
+            int pageNumber = 1;
+            await LoadAsync(pageNumber);
+            await SelectedPageNumberAsync(pageNumber);
         }
 
         private async Task<bool> LoadStateAsync()

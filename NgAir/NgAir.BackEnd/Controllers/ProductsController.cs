@@ -30,26 +30,16 @@ namespace NgAir.BackEnd.Controllers
             return NoContent();
         }
 
-        [HttpPost("addImages")]
-        public async Task<IActionResult> PostAddImagesAsync(ImageDTO imageDTO)
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        public override async Task<IActionResult> GetAsync(int id)
         {
-            var action = await _productsUnitOfWork.AddImageAsync(imageDTO);
+            var action = await _productsUnitOfWork.GetAsync(id);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
             }
-            return BadRequest(action.Message);
-        }
-
-        [HttpPost("removeLastImage")]
-        public async Task<IActionResult> PostRemoveLastImageAsync(ImageDTO imageDTO)
-        {
-            var action = await _productsUnitOfWork.RemoveLastImageAsync(imageDTO);
-            if (action.WasSuccess)
-            {
-                return Ok(action.Result);
-            }
-            return BadRequest(action.Message);
+            return NotFound(action.Message);
         }
 
         [AllowAnonymous]
@@ -76,16 +66,15 @@ namespace NgAir.BackEnd.Controllers
             return BadRequest();
         }
 
-        [AllowAnonymous]
-        [HttpGet("{id}")]
-        public override async Task<IActionResult> GetAsync(int id)
+        [HttpPost("addImages")]
+        public async Task<IActionResult> PostAddImagesAsync(ImageDTO imageDTO)
         {
-            var action = await _productsUnitOfWork.GetAsync(id);
+            var action = await _productsUnitOfWork.AddImageAsync(imageDTO);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
             }
-            return NotFound(action.Message);
+            return BadRequest(action.Message);
         }
 
         [HttpPost("full")]
@@ -99,6 +88,17 @@ namespace NgAir.BackEnd.Controllers
             return NotFound(action.Message);
         }
 
+        [HttpPost("removeLastImage")]
+        public async Task<IActionResult> PostRemoveLastImageAsync(ImageDTO imageDTO)
+        {
+            var action = await _productsUnitOfWork.RemoveLastImageAsync(imageDTO);
+            if (action.WasSuccess)
+            {
+                return Ok(action.Result);
+            }
+            return BadRequest(action.Message);
+        }
+
         [HttpPut("full")]
         public async Task<IActionResult> PutFullAsync(ProductDTO productDTO)
         {
@@ -109,5 +109,6 @@ namespace NgAir.BackEnd.Controllers
             }
             return NotFound(action.Message);
         }
+
     }
 }

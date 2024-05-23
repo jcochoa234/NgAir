@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NgAir.BackEnd.Data;
 using NgAir.BackEnd.Helpers;
+using NgAir.BackEnd.Paging;
 using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
@@ -17,12 +18,17 @@ namespace NgAir.BackEnd.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<State>> GetComboAsync(int countryId)
+        public override async Task<ActionResponse<IEnumerable<State>>> GetAsync()
         {
-            return await _context.States
-                .Where(s => s.CountryId == countryId)
-                .OrderBy(s => s.Name)
+            var states = await _context.States
+                .OrderBy(x => x.Name)
+                .Include(s => s.Cities)
                 .ToListAsync();
+            return new ActionResponse<IEnumerable<State>>
+            {
+                WasSuccess = true,
+                Result = states
+            };
         }
 
         public override async Task<ActionResponse<State>> GetAsync(int id)
@@ -44,19 +50,6 @@ namespace NgAir.BackEnd.Repositories.Implementations
             {
                 WasSuccess = true,
                 Result = state
-            };
-        }
-
-        public override async Task<ActionResponse<IEnumerable<State>>> GetAsync()
-        {
-            var states = await _context.States
-                .OrderBy(x => x.Name)
-                .Include(s => s.Cities)
-                .ToListAsync();
-            return new ActionResponse<IEnumerable<State>>
-            {
-                WasSuccess = true,
-                Result = states
             };
         }
 
@@ -82,6 +75,26 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
+        public async Task<IEnumerable<State>> GetComboAsync(int countryId)
+        {
+            return await _context.States
+                .Where(s => s.CountryId == countryId)
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+        }
+
+        public override async Task<ActionResponse<IEnumerable<State>>> GetPagedAsync(PaginationDTO pagination)
+        {
+            var states = await _context.States.ToListAsync();
+            var page = PagedList<State>.ToPagedList(states, pagination);
+
+            return new ActionResponse<IEnumerable<State>>
+            {
+                WasSuccess = true,
+                Result = page
+            };
+        }
+
         public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
         {
             var queryable = _context.States
@@ -94,12 +107,13 @@ namespace NgAir.BackEnd.Repositories.Implementations
             }
 
             double count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
+            int totalPages = (int)Math.Ceiling(count / pagination.PageSize);
             return new ActionResponse<int>
             {
                 WasSuccess = true,
                 Result = totalPages
             };
         }
+
     }
 }
