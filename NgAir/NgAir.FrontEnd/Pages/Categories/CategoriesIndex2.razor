@@ -1,0 +1,24 @@
+﻿@using AntDesign.TableModels
+@using System.ComponentModel
+@using System.Net.Http.Headers
+@inject HttpClient Http
+
+@page "/categories2"
+
+<Table TItem="Category"
+       DataSource="Categories"
+       Loading="_loading" 
+    Total="_total" 
+    OnChange="HandleTableChange" 
+    RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
+    <Selection />
+    <AntDesign.PropertyColumn Style="width:20%;" Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending">
+        @context.Name
+    </AntDesign.PropertyColumn>
+    <AntDesign.PropertyColumn Style="width:20%;" Property="c=>c.Name" Filters="_genderFilters" />
+    <AntDesign.PropertyColumn Property="c=>c.Name" />
+</Table>
+
+@(_items?.Count() ?? 0)
+
+

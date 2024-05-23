@@ -58,7 +58,7 @@ else
                         <div class="mb-3">
                             <label>Quantity:</label>
                             <div>
-                                <InputNumber class="form-control" @bind-Value="@temporalOrderDTO!.Quantity" />
+                                <AntDesing.InputNumber class="form-control" @AntDesing.bind-Value="@temporalOrderDTO!.Quantity" />
                                 <ValidationMessage For="@(() => temporalOrderDTO.Quantity)" />
                             </div>
                             <label>Remarks:</label>

@@ -44,17 +44,27 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<ActionResponse<IEnumerable<Category>>> GetPagedAsync(PaginationDTO pagination)
+        public async Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(PaginationDTO pagination)
         {
             var categories = await _context.Categories.ToListAsync();
             var page = PagedList<Category>.ToPagedList(categories, pagination);
 
-            return new ActionResponse<IEnumerable<Category>>
+            var pagingResponse = new PagingResponse<Category>
+            {
+                Current = page.MetaData.Current,
+                PageSize = page.MetaData.PageSize,
+                Total = page.MetaData.Total,
+                TotalPages = page.MetaData.TotalPages,
+                Items = page.ToList(),
+            };
+
+            return new ActionResponse<PagingResponse<Category>>
             {
                 WasSuccess = true,
-                Result = page
+                Result = pagingResponse
             };
         }
+
 
         public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
         {

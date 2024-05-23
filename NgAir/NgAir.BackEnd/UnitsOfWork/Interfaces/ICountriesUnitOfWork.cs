@@ -1,4 +1,5 @@
-﻿using NgAir.Shared.DTOs;
+﻿using NgAir.BackEnd.Paging;
+using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
 using NgAir.Shared.Responses;
 
@@ -14,7 +15,7 @@ namespace NgAir.BackEnd.UnitsOfWork.Interfaces
 
         Task<IEnumerable<Country>> GetComboAsync();
 
-        Task<ActionResponse<IEnumerable<Country>>> GetPagedAsync(PaginationDTO pagination);
+        Task<ActionResponse<PagingResponse<Country>>> GetPagedAsync(PaginationDTO pagination);
 
         Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination);
 

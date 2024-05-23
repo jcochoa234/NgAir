@@ -125,15 +125,24 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
-        public virtual async Task<ActionResponse<IEnumerable<T>>> GetPagedAsync(PaginationDTO pagination)
+        public virtual async Task<ActionResponse<PagingResponse<T>>> GetPagedAsync(PaginationDTO pagination)
         {
             var queryable = _entity.AsQueryable();
             var page = PagedList<T>.ToPagedList(queryable, pagination);
 
-            return new ActionResponse<IEnumerable<T>>
+            var pagingResponse = new PagingResponse<T>
+            {
+                Current = page.MetaData.Current,
+                PageSize = page.MetaData.PageSize,
+                Total = page.MetaData.Total,
+                TotalPages = page.MetaData.TotalPages,
+                Items = page.ToList(),
+            };
+
+            return new ActionResponse<PagingResponse<T>>
             {
                 WasSuccess = true,
-                Result = page
+                Result = pagingResponse
             };
         }
 

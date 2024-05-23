@@ -1,17 +1,19 @@
+using AntDesign;
+using AntDesign.TableModels;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using CurrieTechnologies.Razor.SweetAlert2;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
 using NgAir.Shared.Entities;
+using System.ComponentModel;
 using System.Net;
 
 namespace NgAir.FrontEnd.Pages.Categories
 {
-    [Authorize(Roles = "Admin")]
-    public partial class CategoriesIndex
+    public partial class CategoriesIndex2
     {
+
         private int currentPage = 1;
         private int totalPages;
 
@@ -25,6 +27,21 @@ namespace NgAir.FrontEnd.Pages.Categories
         [CascadingParameter] IModalService Modal { get; set; } = default!;
 
         public List<Category>? Categories { get; set; }
+
+
+
+        bool _loading = false;
+
+        int _total;
+        List<Category> _data = new List<Category>();
+        IEnumerable<Category> _items;
+        TableFilter<string>[] _genderFilters = new[]
+        {
+            new TableFilter<string> { Text = "Male", Value = "male" },
+            new TableFilter<string> { Text = "Female", Value = "female" },
+        };
+
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -94,6 +111,29 @@ namespace NgAir.FrontEnd.Pages.Categories
                 url += $"&filter={Filter}";
             }
 
+            var url2 = $"api/categories/paged?pageNumber={pageNumber}&PageSize={PageSize}";
+            if (!string.IsNullOrEmpty(Filter))
+            {
+                url2 += $"&filter={Filter}";
+            }
+
+            try
+            {
+                var responseHttp2 = await Repository.GetAsync<IEnumerable<Category>>(url2);
+                if (responseHttp2.Error)
+                {
+                    var message2 = await responseHttp2.GetErrorMessageAsync();
+                    await SweetAlertService.FireAsync("Error", message2, SweetAlertIcon.Error);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                string sss = ex.Message;
+            }
+
+
+
             var responseHttp = await Repository.GetAsync<List<Category>>(url);
             if (responseHttp.Error)
             {
@@ -102,6 +142,21 @@ namespace NgAir.FrontEnd.Pages.Categories
                 return false;
             }
             Categories = responseHttp.Response;
+
+
+            //ApiResponse data = await Http.GetFromJsonAsync<ApiResponse>("https://randomuser.me/api?" + GetRandomuserParams(queryModel));
+            //int i = 0;
+            //foreach (var item in data.Results)
+            //{
+            //    //item.IID = queryModel.StartIndex + i++;
+            //}
+
+            _loading = false;
+            _data = Categories;
+            _total = 20;
+
+
+
             return true;
         }
 
@@ -180,5 +235,80 @@ namespace NgAir.FrontEnd.Pages.Categories
             await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Record successfully deleted.");
         }
 
+
+
+
+
+        async Task HandleTableChange(QueryModel<Category> queryModel)
+        {
+            _loading = true;
+
+
+            await LoadAsync();
+
+
+            //////ApiResponse data = await Http.GetFromJsonAsync<ApiResponse>("https://randomuser.me/api?" + GetRandomuserParams(queryModel));
+            //////int i = 0;
+            //////foreach (var item in data.Results)
+            //////{
+            //////    //item.IID = queryModel.StartIndex + i++;
+            //////}
+
+            //////_loading = false;
+            //////_data = data.Results;
+            //////_total = data.TotalCount;
+        }
+
+        string GetRandomuserParams(QueryModel<Category> queryModel)
+        {
+            List<string> query = new List<string>()
+        {
+            $"results={queryModel.PageSize}",
+            $"page={queryModel.PageIndex}",
+        };
+
+            queryModel.SortModel.ForEach(x =>
+            {
+                query.Add($"sortField={x.FieldName.ToLower()}");
+                query.Add($"sortOrder={x.Sort}");
+            });
+
+            queryModel.FilterModel.ForEach(filter =>
+            {
+                filter.SelectedValues.ForEach(value =>
+                {
+                    query.Add($"{filter.FieldName.ToLower()}={value}");
+                });
+            });
+
+            return string.Join('&', query);
+        }
+
+        public class Data
+        {
+            public int IID { get; set; }
+            [DisplayName("Name")]
+            public Name Name { get; set; }
+
+            [DisplayName("Gender")]
+            public string Gender { get; set; }
+
+            [DisplayName("Email")]
+            public string Email { get; set; }
+        }
+
+        public struct Name
+        {
+            public string First { get; set; }
+
+            public string Last { get; set; }
+        }
+
+        public class ApiResponse
+        {
+            public Category[] Results { get; set; }
+
+            public int TotalCount { get; set; } = 200; // 200 is mock data, you should read it from server
+        }
     }
 }

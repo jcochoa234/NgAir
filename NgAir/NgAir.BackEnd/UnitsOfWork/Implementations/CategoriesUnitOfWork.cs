@@ -1,4 +1,5 @@
-﻿using NgAir.BackEnd.Repositories.Interfaces;
+﻿using NgAir.BackEnd.Paging;
+using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.BackEnd.UnitsOfWork.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
@@ -19,7 +20,7 @@ namespace NgAir.BackEnd.UnitsOfWork.Implementations
 
         public async Task<IEnumerable<Category>> GetComboAsync() => await _categoriesRepository.GetComboAsync();
 
-        public async Task<ActionResponse<IEnumerable<Category>>> GetPagedAsync(PaginationDTO pagination) => await _categoriesRepository.GetPagedAsync(pagination);
+        public async Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(PaginationDTO pagination) => await _categoriesRepository.GetPagedAsync(pagination);
 
         public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination) => await _categoriesRepository.GetTotalPagesAsync(pagination);
 

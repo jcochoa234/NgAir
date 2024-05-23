@@ -37,7 +37,7 @@ namespace NgAir.BackEnd.Controllers
             return Ok(await _categoriesUnitOfWork.GetComboAsync());
         }
 
-        [HttpGet("Paged")]
+        [HttpGet("paged")]
         public override async Task<IActionResult> GetPagedAsync([FromQuery] PaginationDTO pagination)
         {
             var response = await _categoriesUnitOfWork.GetPagedAsync(pagination);
