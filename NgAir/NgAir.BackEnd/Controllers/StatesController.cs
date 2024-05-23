@@ -19,13 +19,6 @@ namespace NgAir.BackEnd.Controllers
             _statesUnitOfWork = statesUnitOfWork;
         }
 
-        [AllowAnonymous]
-        [HttpGet("combo/{countryId:int}")]
-        public async Task<IActionResult> GetComboAsync(int countryId)
-        {
-            return Ok(await _statesUnitOfWork.GetComboAsync(countryId));
-        }
-
         [HttpGet("full")]
         public override async Task<IActionResult> GetAsync()
         {
@@ -37,10 +30,39 @@ namespace NgAir.BackEnd.Controllers
             return BadRequest();
         }
 
+        [HttpGet("{id}")]
+        public override async Task<IActionResult> GetAsync(int id)
+        {
+            var response = await _statesUnitOfWork.GetAsync(id);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return NotFound(response.Message);
+        }
+
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var response = await _statesUnitOfWork.GetAsync(pagination);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("combo/{countryId:int}")]
+        public async Task<IActionResult> GetComboAsync(int countryId)
+        {
+            return Ok(await _statesUnitOfWork.GetComboAsync(countryId));
+        }
+
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationDTO pagination)
+        {
+            var response = await _statesUnitOfWork.GetPagedAsync(pagination);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -59,15 +81,5 @@ namespace NgAir.BackEnd.Controllers
             return BadRequest();
         }
 
-        [HttpGet("{id}")]
-        public override async Task<IActionResult> GetAsync(int id)
-        {
-            var response = await _statesUnitOfWork.GetAsync(id);
-            if (response.WasSuccess)
-            {
-                return Ok(response.Result);
-            }
-            return NotFound(response.Message);
-        }
     }
 }
