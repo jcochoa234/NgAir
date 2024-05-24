@@ -5,10 +5,21 @@
 
 @page "/categories2"
 
-<Table TItem="Category"
-       DataSource="Categories"
-       Loading="_loading" 
-    Total="_total" 
+<Button Type="primary" OnClick="@(()=>{ _visible = true; })">
+    Open Modal
+</Button>
+<Modal Title="BasicModal"
+       @bind-Visible="@_visible">
+    <p>Some contents...</p>
+    <p>Some contents...</p>
+    <p>Some contents...</p>
+</Modal>
+
+<Table 
+    TItem="Category"
+    DataSource="Categories"
+    Loading="_loading" 
+    Total="_total"
     OnChange="HandleTableChange" 
     RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
     <Selection />
@@ -19,6 +30,5 @@
     <AntDesign.PropertyColumn Property="c=>c.Name" />
 </Table>
 
-@(_items?.Count() ?? 0)
 
 

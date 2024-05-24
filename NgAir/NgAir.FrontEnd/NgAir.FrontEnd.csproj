@@ -21,8 +21,4 @@
     <ProjectReference Include="..\NgAir.Shared\NgAir.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Paging\" />
-  </ItemGroup>
-
 </Project>
