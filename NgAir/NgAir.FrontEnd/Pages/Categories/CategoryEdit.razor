@@ -1,6 +1,5 @@
 ﻿@page "/categories/edit/{Id:int}"
-
-<h3>Edit Category</h3>
+@inherits FeedbackComponent<string, string>
 
 @if(category is null)
 {

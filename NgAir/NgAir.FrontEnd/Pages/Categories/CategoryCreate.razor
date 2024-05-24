@@ -1,5 +1,4 @@
 ﻿@page "/categories/create"
-
-<h3>Create Category</h3>
+@inherits FeedbackComponent<string, string>
 
 <FormWithName @ref="categoryForm" Label="Category: " Model="category" OnValidSubmit="CreateAsync" ReturnAction="Return" />

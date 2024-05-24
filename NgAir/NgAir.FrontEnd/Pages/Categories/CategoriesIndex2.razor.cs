@@ -52,17 +52,6 @@ namespace NgAir.FrontEnd.Pages.Categories
                 });
             }
 
-
-
-            var modalConfig = new ModalOptions
-            {
-                Title = "Recharge Your Account",
-                Centered = true,
-                OkText = "Ok",
-                Width = 500,
-            };
-            _modalService.CreateModal<CategoryCreate>(modalConfig);
-
             Categories = responseHttp.Response?.Items.ToList();
             _loading = false;
             _total = (int)(responseHttp.Response?.Total!);
@@ -93,5 +82,31 @@ namespace NgAir.FrontEnd.Pages.Categories
 
             return string.Join('&', query);
         }
+
+        private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+        {
+
+            var modalConfig = new AntDesign.ModalOptions
+            {
+                Title = isEdit ? "Edit Category" : "Create Category",
+                Centered = true,
+                OkText = "Ok",
+                Width = 500
+            };
+
+
+            if (isEdit)
+            {
+                //  modalReference = Modal.Show<CategoryEdit>(string.Empty, new ModalParameters().Add("Id", id));
+                _modalService.CreateModal<CategoryEdit, string, string>(modalConfig, "120");
+            }
+            else
+            {
+                _modalService.CreateModal<CategoryCreate, string, string>(modalConfig, "120");
+            }
+        }
     }
 }
+
+
+////Ant Blazor Modal Using Template Component

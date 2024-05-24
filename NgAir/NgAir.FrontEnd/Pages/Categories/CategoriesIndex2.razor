@@ -5,30 +5,34 @@
 
 @page "/categories2"
 
-<Button Type="primary" OnClick="@(()=>{ _visible = true; })">
-    Open Modal
-</Button>
-<Modal Title="BasicModal"
-       @bind-Visible="@_visible">
-    <p>Some contents...</p>
-    <p>Some contents...</p>
-    <p>Some contents...</p>
-</Modal>
-
-<Table 
-    TItem="Category"
-    DataSource="Categories"
-    Loading="_loading" 
-    Total="_total"
-    OnChange="HandleTableChange" 
-    RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
-    <Selection />
-    <AntDesign.PropertyColumn Style="width:20%;" Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending">
-        @context.Name
-    </AntDesign.PropertyColumn>
-    <AntDesign.PropertyColumn Style="width:20%;" Property="c=>c.Name" Filters="_genderFilters" />
-    <AntDesign.PropertyColumn Property="c=>c.Name" />
-</Table>
+<div class="card">
+    <div class="card-header">
+        <span>
+            <i class="bi bi-list-check"></i> Categories
+            <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-circle" /> Add Category</a>
+        </span>
+    </div>
+    <div class="card-body">
+        <Table TItem="Category"
+               DataSource="Categories"
+               Loading="_loading"
+               Total="_total"
+               OnChange="HandleTableChange"
+               RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
+            <Selection />
+            <AntDesign.PropertyColumn Style="width:20%;" Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending">
+                @context.Name
+            </AntDesign.PropertyColumn>
+            <AntDesign.PropertyColumn Style="width:20%;" Property="c=>c.Name" Filters="_genderFilters" />
+            <AntDesign.PropertyColumn Property="c=>c.Name" />
+            <ActionColumn Title="Action">
+                <Space>
+                    <SpaceItem><Button Danger OnClick="()=>ShowModalAsync(context.Id, true)">Delete</Button></SpaceItem>
+                </Space>
+            </ActionColumn>
+        </Table>
+    </div>
+</div>
 
 
 

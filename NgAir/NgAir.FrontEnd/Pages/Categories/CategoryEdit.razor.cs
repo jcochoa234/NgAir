@@ -23,6 +23,14 @@ namespace NgAir.FrontEnd.Pages.Categories
 
         [EditorRequired, Parameter] public int Id { get; set; }
 
+        string _amount;
+
+        protected override void OnInitialized()
+        {
+            _amount = Options;
+            base.OnInitialized();
+        }
+
         protected override async Task OnParametersSetAsync()
         {
             var responseHttp = await Repository.GetAsync<Category>($"/api/categories/{Id}");
