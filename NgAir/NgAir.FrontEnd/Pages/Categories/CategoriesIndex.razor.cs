@@ -1,8 +1,8 @@
-using Blazored.Modal;
-using Blazored.Modal.Services;
-using CurrieTechnologies.Razor.SweetAlert2;
+using AntDesign;
+using AntDesign.TableModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using NgAir.FrontEnd.Paging;
 using NgAir.FrontEnd.Repositories;
 using NgAir.Shared.Entities;
 using System.Net;
@@ -12,172 +12,153 @@ namespace NgAir.FrontEnd.Pages.Categories
     [Authorize(Roles = "Admin")]
     public partial class CategoriesIndex
     {
-        private int currentPage = 1;
-        private int totalPages;
 
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
+        [Inject] private IMessageService Message { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
-        [Parameter, SupplyParameterFromQuery] public string PageNumber { get; set; } = string.Empty;
-        [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
-        [Parameter, SupplyParameterFromQuery] public int PageSize { get; set; } = 10;
-        [CascadingParameter] IModalService Modal { get; set; } = default!;
 
         public List<Category>? Categories { get; set; }
 
-        protected override async Task OnInitializedAsync()
+
+        public bool Loading = false;
+
+        public int Total;
+        public IEnumerable<Category> _items;
+
+        TableFilter<string>[] _genderFilters = new[]
         {
-            await LoadAsync();
+            new TableFilter<string> { Text = "Male", Value = "male" },
+            new TableFilter<string> { Text = "Female", Value = "female" },
+        };
+
+
+        public async Task HandleTableChange(QueryModel<Category> queryModel)
+        {
+            Loading = true;
+
+            var url = $"api/categories/paged?" + GetRandomuserParams(queryModel);
+
+            var responseHttp = await Repository.GetAsync<PagingResponse<Category>>(url);
+            if (responseHttp.Error)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
+            }
+
+            Categories = responseHttp.Response?.Items.ToList();
+            Loading = false;
+            Total = (int)(responseHttp.Response?.Total!);
+
+        }
+
+        public string GetRandomuserParams(QueryModel<Category> queryModel)
+        {
+            List<string> query = new List<string>()
+        {
+            $"pageSize={queryModel.PageSize}",
+            $"pageNumber={queryModel.PageIndex}",
+        };
+
+            queryModel.SortModel.ForEach(x =>
+            {
+                query.Add($"sortField={x.FieldName.ToLower()}");
+                query.Add($"sortOrder={x.Sort}");
+            });
+
+            queryModel.FilterModel.ForEach(filter =>
+            {
+                filter.SelectedValues.ForEach(value =>
+                {
+                    query.Add($"{filter.FieldName.ToLower()}={value}");
+                });
+            });
+
+            return string.Join('&', query);
         }
 
         private async Task ShowModalAsync(int id = 0, bool isEdit = false)
         {
-            IModalReference modalReference;
+
+            var modalConfig = new AntDesign.ModalOptions
+            {
+                Title = isEdit ? "Edit Category" : "Create Category",
+                Centered = true,
+                OkText = "Ok",
+                Width = 500,
+                Footer = null,
+            };
 
             if (isEdit)
             {
-                modalReference = Modal.Show<CategoryEdit>(string.Empty, new ModalParameters().Add("Id", id));
+                ModalService.CreateModal<CategoryEdit, int>(modalConfig, id);
             }
             else
             {
-                modalReference = Modal.Show<CategoryCreate>();
-            }
-
-            var result = await modalReference.Result;
-            if (result.Confirmed)
-            {
-                await LoadAsync();
+                ModalService.CreateModal<CategoryCreate, string>(modalConfig, "");
             }
         }
 
-        private async Task SelectedPageSizeAsync(int pageSize)
-        {
-            PageSize = pageSize;
-            int pageNumber = 1;
-            await LoadAsync(pageNumber);
-            await SelectedPageNumberAsync(pageNumber);
-        }
-        private async Task FilterCallBack(string filter)
-        {
-            Filter = filter;
-            await ApplyFilterAsync();
-            StateHasChanged();
-        }
-
-        private async Task SelectedPageNumberAsync(int pageNumber)
-        {
-            if (!string.IsNullOrWhiteSpace(PageNumber))
-            {
-                pageNumber = Convert.ToInt32(PageNumber);
-            }
-
-            currentPage = pageNumber;
-            await LoadAsync(pageNumber);
-        }
-
-        private async Task LoadAsync(int pageNumber = 1)
-        {
-            var ok = await LoadListAsync(pageNumber);
-            if (ok)
-            {
-                await LoadPagesAsync();
-            }
-        }
-
-        private async Task<bool> LoadListAsync(int pageNumber)
-        {
-            ValidatePageSize();
-            var url = $"api/categories/?pageNumber={pageNumber}&PageSize={PageSize}";
-            if (!string.IsNullOrEmpty(Filter))
-            {
-                url += $"&filter={Filter}";
-            }
-
-            var responseHttp = await Repository.GetAsync<List<Category>>(url);
-            if (responseHttp.Error)
-            {
-                var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-                return false;
-            }
-            Categories = responseHttp.Response;
-            return true;
-        }
-
-        private async Task LoadPagesAsync()
-        {
-            ValidatePageSize();
-            var url = $"api/categories/totalPages?pageSize={PageSize}";
-            if (!string.IsNullOrEmpty(Filter))
-            {
-                url += $"&filter={Filter}";
-            }
-
-            var responseHttp = await Repository.GetAsync<int>(url);
-            if (responseHttp.Error)
-            {
-                var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-                return;
-            }
-            totalPages = responseHttp.Response;
-        }
-
-        private void ValidatePageSize()
-        {
-            if (PageSize == 0)
-            {
-                PageSize = 10;
-            }
-        }
-
-        private async Task ApplyFilterAsync()
-        {
-            int pageNumber = 1;
-            await LoadAsync(pageNumber);
-            await SelectedPageNumberAsync(pageNumber);
-        }
 
         private async Task DeleteAsycn(Category category)
         {
-            var result = await SweetAlertService.FireAsync(new SweetAlertOptions
+
+            var options = new ConfirmOptions
             {
                 Title = "Confirmation",
-                Text = $"Are you sure you want to delete the category: {category.Name}?",
-                Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true,
-            });
-            var confirm = string.IsNullOrEmpty(result.Value);
-            if (confirm)
+                OkText = "Delete",
+                Content = $"Are you sure you want to delete the category: {category.Name}?",
+                Centered = true,
+                //Icon = @<Icon Type="exclamation-circle" Theme="outline"/>,
+                Button1Props =
+                {
+                    Danger = true,
+                    Shape = ButtonShape.Round,
+                    Icon = "delete",
+                },
+                Button2Props =
+                {
+                    Shape = ButtonShape.Round,
+                    Icon = "close"
+                }
+            };
+
+            var result = await ModalService.ConfirmAsync(options);
+            if (result)
+            {
+                Loading = true;
+                var responseHttp = await Repository.DeleteAsync<Category>($"api/categories/{category.Id}");
+                if (responseHttp.Error)
+                {
+                    if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        NavigationManager.NavigateTo("/categories2");
+                    }
+                    else
+                    {
+                        Loading = false;
+                        var mensajeError = await responseHttp.GetErrorMessageAsync();
+                        await ModalService.ErrorAsync(new ConfirmOptions
+                        {
+                            Title = "Error",
+                            Content = mensajeError,
+                            OkText = "Close"
+                        });
+                    }
+                    return;
+                }
+            }
+            else
             {
                 return;
             }
-
-            var responseHttp = await Repository.DeleteAsync<Category>($"api/categories/{category.Id}");
-            if (responseHttp.Error)
-            {
-                if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
-                {
-                    NavigationManager.NavigateTo("/categories");
-                }
-                else
-                {
-                    var mensajeError = await responseHttp.GetErrorMessageAsync();
-                    await SweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-                }
-                return;
-            }
-
-            await LoadAsync();
-            var toast = SweetAlertService.Mixin(new SweetAlertOptions
-            {
-                Toast = true,
-                Position = SweetAlertPosition.BottomEnd,
-                ShowConfirmButton = true,
-                Timer = 3000
-            });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Record successfully deleted.");
+            return;
         }
 
     }

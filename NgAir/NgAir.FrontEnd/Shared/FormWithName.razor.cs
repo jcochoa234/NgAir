@@ -1,7 +1,7 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+using AntDesign;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components;
 using NgAir.Shared.Interfaces;
 
 namespace NgAir.FrontEnd.Shared
@@ -13,9 +13,10 @@ namespace NgAir.FrontEnd.Shared
         [EditorRequired, Parameter] public TModel Model { get; set; } = default!;
         [EditorRequired, Parameter] public string Label { get; set; } = null!;
         [EditorRequired, Parameter] public EventCallback OnValidSubmit { get; set; }
-        [EditorRequired, Parameter] public EventCallback ReturnAction { get; set; }
-        [Inject] public SweetAlertService SweetAlertService { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
+
         public bool FormPostedSuccessfully { get; set; }
+
 
         protected override void OnInitialized()
         {
@@ -30,15 +31,27 @@ namespace NgAir.FrontEnd.Shared
                 return;
             }
 
-            var result = await SweetAlertService.FireAsync(new SweetAlertOptions
+            var options = new ConfirmOptions
             {
-                Title = "Confirmación",
-                Text = "¿Deseas abandonar la página y perder los cambios?",
-                Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true,
-            });
-            var confirm = !string.IsNullOrEmpty(result.Value);
-            if (confirm)
+                Title = "Confirmation",
+                OkText = "Delete",
+                Content = "Do you wish to leave the page and lose the changes?",
+                Centered = true,
+                Button1Props =
+                {
+                    Danger = true,
+                    Shape = ButtonShape.Round,
+                    Icon = "delete",
+                },
+                Button2Props =
+                {
+                    Shape = ButtonShape.Round,
+                    Icon = "close"
+                }
+            };
+
+            var result = await ModalService.ConfirmAsync(options);
+            if (result)
             {
                 return;
             }

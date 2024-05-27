@@ -1,11 +1,8 @@
 using AntDesign;
 using AntDesign.TableModels;
-using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using NgAir.FrontEnd.Paging;
 using NgAir.FrontEnd.Repositories;
-using NgAir.FrontEnd.Shared;
 using NgAir.Shared.Entities;
 using System.Net;
 
@@ -93,10 +90,10 @@ namespace NgAir.FrontEnd.Pages.Categories
             {
                 Title = isEdit ? "Edit Category" : "Create Category",
                 Centered = true,
-                OkText = "@HandleOk",
-                Width = 500
+                OkText = "Ok",
+                Width = 500,
+                Footer = null,
             };
-
 
             if (isEdit)
             {
@@ -108,13 +105,7 @@ namespace NgAir.FrontEnd.Pages.Categories
             }
         }
 
-        private async Task HandleOk(MouseEventArgs e)
-        {
-            Loading = true;
-            await Task.Delay(3000);
-            _visible = false;
-            Loading = false;
-        }
+
 
         private async Task DeleteAsycn(Category category)
         {
@@ -171,7 +162,7 @@ namespace NgAir.FrontEnd.Pages.Categories
             return;
         }
 
-            
+
     }
 }
 

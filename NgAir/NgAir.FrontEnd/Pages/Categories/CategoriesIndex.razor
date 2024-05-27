@@ -4,39 +4,29 @@
     <div class="card-header">
         <span>
             <i class="bi bi-list-check"></i> Categories
-            <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-circle" /> Add Category</a>
+            <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModalAsync()">Add Category</Button>
         </span>
     </div>
     <div class="card-body">
-        <Filter PlaceHolder="Search category..." Callback=@FilterCallBack />
-        <GenericList MyList="Categories">
-            <Body>
-                <NgAir.FrontEnd.Shared.Pagination CurrentPage="currentPage"
-                            TotalPages="totalPages"
-                            SelectedPageNumber="SelectedPageNumberAsync"
-                            PageSize="SelectedPageSizeAsync" />
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th style="width:168px"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var category in Categories!)
-                        {
-                            <tr>
-                                <td>@category.Name</td>
-                                <td>
-                                    <a @onclick=@(() => ShowModalAsync(category.Id, true)) class="btn btn-sm btn-warning"><i class="bi bi-pencil" /> Edit</a>
-                                    <button @onclick=@(() => DeleteAsycn(category)) class="btn btn-sm btn-danger"><i class="bi bi-trash" /> Remove</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </Body>
-        </GenericList>
+        <Table TItem="Category"
+               DataSource="Categories"
+               Loading="Loading"
+               Total="Total"
+               OnChange="HandleTableChange"
+               RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
+            <Selection />
+            <AntDesign.PropertyColumn Style="width:20%;" Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending">
+                @context.Name
+            </AntDesign.PropertyColumn>
+            <AntDesign.PropertyColumn Style="width:20%;" Property="c=>c.Name" Filters="_genderFilters" />
+            <AntDesign.PropertyColumn Property="c=>c.Name" />
+            <ActionColumn Title="Action">
+                <Space>
+                    <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Edit" OnClick="()=>ShowModalAsync(context.Id, true)">Edit</Button></SpaceItem>
+                    <SpaceItem><Button Danger Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
+                </Space>
+            </ActionColumn>
+        </Table>
     </div>
 </div>

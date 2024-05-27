@@ -10,7 +10,7 @@
     <div class="card-header">
         <span>
             <i class="bi bi-list-check"></i> Categories
-            <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-circle" /> Add Category</a>
+            <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModalAsync()">Add Category</Button>
         </span>
     </div>
     <div class="card-body">
@@ -29,8 +29,8 @@
             <AntDesign.PropertyColumn Property="c=>c.Name" />
             <ActionColumn Title="Action">
                 <Space>
-                    <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Block OnClick="()=>ShowModalAsync(context.Id, true)">Edit</Button></SpaceItem>
-                    <SpaceItem><Button Danger OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
+                    <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Edit" OnClick="()=>ShowModalAsync(context.Id, true)">Edit</Button></SpaceItem>
+                    <SpaceItem><Button Danger Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
                 </Space>
             </ActionColumn>
         </Table>
