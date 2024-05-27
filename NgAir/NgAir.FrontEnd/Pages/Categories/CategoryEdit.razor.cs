@@ -1,3 +1,4 @@
+using AntDesign;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using CurrieTechnologies.Razor.SweetAlert2;
@@ -17,21 +18,21 @@ namespace NgAir.FrontEnd.Pages.Categories
         private FormWithName<Category>? categoryForm;
 
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
+        [Inject] private AntDesign.ModalService ModalService { get; set; } = null!;
+        [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-        [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
 
         [EditorRequired, Parameter] public int Id { get; set; }
 
-        string _amount;
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            _amount = Options;
-            base.OnInitialized();
+            Id = Options;
+            await LoadAsync();
         }
 
-        protected override async Task OnParametersSetAsync()
+        private async Task LoadAsync()
         {
             var responseHttp = await Repository.GetAsync<Category>($"/api/categories/{Id}");
             if (responseHttp.Error)
@@ -43,7 +44,12 @@ namespace NgAir.FrontEnd.Pages.Categories
                 else
                 {
                     var messsage = await responseHttp.GetErrorMessageAsync();
-                    await SweetAlertService.FireAsync("Error", messsage, SweetAlertIcon.Error);
+                    await ModalService.ErrorAsync(new ConfirmOptions
+                    {
+                        Title = "Error",
+                        Content = messsage,
+                        OkText = "Close"
+                    });
                 }
             }
             else
@@ -58,21 +64,19 @@ namespace NgAir.FrontEnd.Pages.Categories
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message);
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
                 return;
             }
 
-            await BlazoredModal.CloseAsync(ModalResult.Ok());
             Return();
 
-            var toast = SweetAlertService.Mixin(new SweetAlertOptions
-            {
-                Toast = true,
-                Position = SweetAlertPosition.BottomEnd,
-                ShowConfirmButton = true,
-                Timer = 3000
-            });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Successfully saved changes.");
+            await Message.Success("Successfully saved changes.");
+
         }
 
         private void Return()

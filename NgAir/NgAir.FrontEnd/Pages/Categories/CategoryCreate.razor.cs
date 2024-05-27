@@ -1,3 +1,4 @@
+using AntDesign;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using CurrieTechnologies.Razor.SweetAlert2;
@@ -15,9 +16,8 @@ namespace NgAir.FrontEnd.Pages.Categories
         private Category category = new();
         private FormWithName<Category>? categoryForm;
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
+        [Inject] private AntDesign.ModalService _modalService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-        [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
         private async Task CreateAsync()
         {
@@ -25,23 +25,26 @@ namespace NgAir.FrontEnd.Pages.Categories
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await _modalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
+
                 return;
             }
 
-
-            await BlazoredModal.CloseAsync(ModalResult.Ok());
             Return();
 
-            var toast = SweetAlertService.Mixin(new SweetAlertOptions
+            await _modalService.SuccessAsync(new ConfirmOptions
             {
-                Toast = true,
-                Position = SweetAlertPosition.BottomEnd,
-                ShowConfirmButton = true,
-                Timer = 3000
+                Title = "Success",
+                Content = "Registration successfully created.",
+                OkText = "Close"
             });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registration successfully created.");
         }
+
 
         private void Return()
         {

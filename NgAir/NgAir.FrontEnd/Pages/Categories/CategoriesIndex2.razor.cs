@@ -1,9 +1,13 @@
 using AntDesign;
 using AntDesign.TableModels;
+using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using NgAir.FrontEnd.Paging;
 using NgAir.FrontEnd.Repositories;
+using NgAir.FrontEnd.Shared;
 using NgAir.Shared.Entities;
+using System.Net;
 
 namespace NgAir.FrontEnd.Pages.Categories
 {
@@ -11,10 +15,9 @@ namespace NgAir.FrontEnd.Pages.Categories
     {
 
         [Inject] private IRepository Repository { get; set; } = null!;
-        //[Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
-
-
-        [Inject] private ModalService _modalService { get; set; } = null!;
+        [Inject] private IMessageService Message { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
 
         public List<Category>? Categories { get; set; }
@@ -22,7 +25,7 @@ namespace NgAir.FrontEnd.Pages.Categories
         bool _visible = false;
 
 
-        public bool _loading = false;
+        public bool Loading = false;
 
         public int _total;
         public IEnumerable<Category> _items;
@@ -36,7 +39,7 @@ namespace NgAir.FrontEnd.Pages.Categories
 
         public async Task HandleTableChange(QueryModel<Category> queryModel)
         {
-            _loading = true;
+            Loading = true;
 
             var url = $"api/categories/paged?" + GetRandomuserParams(queryModel);
 
@@ -44,7 +47,7 @@ namespace NgAir.FrontEnd.Pages.Categories
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
-                await _modalService.ErrorAsync(new ConfirmOptions
+                await ModalService.ErrorAsync(new ConfirmOptions
                 {
                     Title = "Error",
                     Content = message,
@@ -53,7 +56,7 @@ namespace NgAir.FrontEnd.Pages.Categories
             }
 
             Categories = responseHttp.Response?.Items.ToList();
-            _loading = false;
+            Loading = false;
             _total = (int)(responseHttp.Response?.Total!);
 
         }
@@ -90,21 +93,85 @@ namespace NgAir.FrontEnd.Pages.Categories
             {
                 Title = isEdit ? "Edit Category" : "Create Category",
                 Centered = true,
-                OkText = "Ok",
+                OkText = "@HandleOk",
                 Width = 500
             };
 
 
             if (isEdit)
             {
-                //  modalReference = Modal.Show<CategoryEdit>(string.Empty, new ModalParameters().Add("Id", id));
-                _modalService.CreateModal<CategoryEdit, string, string>(modalConfig, "120");
+                ModalService.CreateModal<CategoryEdit, int>(modalConfig, id);
             }
             else
             {
-                _modalService.CreateModal<CategoryCreate, string, string>(modalConfig, "120");
+                ModalService.CreateModal<CategoryCreate, string>(modalConfig, "");
             }
         }
+
+        private async Task HandleOk(MouseEventArgs e)
+        {
+            Loading = true;
+            await Task.Delay(3000);
+            _visible = false;
+            Loading = false;
+        }
+
+        private async Task DeleteAsycn(Category category)
+        {
+
+            var options = new ConfirmOptions
+            {
+                Title = "Confirmation",
+                OkText = "Delete",
+                Content = $"Are you sure you want to delete the category: {category.Name}?",
+                Centered = true,
+                //Icon = @<Icon Type="exclamation-circle" Theme="outline"/>,
+                Button1Props =
+                {
+                    Danger = true,
+                    Shape = ButtonShape.Round,
+                    Icon = "delete",
+                },
+                Button2Props =
+                {
+                    Shape = ButtonShape.Round,
+                    Icon = "close"
+                }
+            };
+
+            var result = await ModalService.ConfirmAsync(options);
+            if (result)
+            {
+                Loading = true;
+                var responseHttp = await Repository.DeleteAsync<Category>($"api/categories/{category.Id}");
+                if (responseHttp.Error)
+                {
+                    if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        NavigationManager.NavigateTo("/categories2");
+                    }
+                    else
+                    {
+                        Loading = false;
+                        var mensajeError = await responseHttp.GetErrorMessageAsync();
+                        await ModalService.ErrorAsync(new ConfirmOptions
+                        {
+                            Title = "Error",
+                            Content = mensajeError,
+                            OkText = "Close"
+                        });
+                    }
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+            return;
+        }
+
+            
     }
 }
 

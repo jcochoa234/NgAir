@@ -5,6 +5,7 @@
 
 @page "/categories2"
 
+
 <div class="card">
     <div class="card-header">
         <span>
@@ -13,9 +14,10 @@
         </span>
     </div>
     <div class="card-body">
+
         <Table TItem="Category"
                DataSource="Categories"
-               Loading="_loading"
+               Loading="Loading"
                Total="_total"
                OnChange="HandleTableChange"
                RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
@@ -27,7 +29,8 @@
             <AntDesign.PropertyColumn Property="c=>c.Name" />
             <ActionColumn Title="Action">
                 <Space>
-                    <SpaceItem><Button Danger OnClick="()=>ShowModalAsync(context.Id, true)">Delete</Button></SpaceItem>
+                    <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Block OnClick="()=>ShowModalAsync(context.Id, true)">Edit</Button></SpaceItem>
+                    <SpaceItem><Button Danger OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
                 </Space>
             </ActionColumn>
         </Table>
