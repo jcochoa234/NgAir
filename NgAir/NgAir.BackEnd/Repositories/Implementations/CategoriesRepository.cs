@@ -31,7 +31,8 @@ namespace NgAir.BackEnd.Repositories.Implementations
             {
                 WasSuccess = true,
                 Result = await queryable
-                    .OrderBy(x => x.Name)
+                    //.OrderBy(x => x.Name)
+                    .OrderByDynamic(pagination)
                     .Paginate(pagination)
                     .ToListAsync()
             };
@@ -44,10 +45,11 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(PaginationDTO pagination)
+        public override async Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(PaginationDTO pagination)
         {
-            var categories = await _context.Categories.ToListAsync();
-            var page = PagedList<Category>.ToPagedList(categories, pagination);
+            var queryable = _context.Categories.AsQueryable();
+
+            var page = PagedList<Category>.ToPagedList(queryable.OrderByDynamic(pagination), pagination);
 
             var pagingResponse = new PagingResponse<Category>
             {
@@ -64,7 +66,6 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 Result = pagingResponse
             };
         }
-
 
         public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
         {

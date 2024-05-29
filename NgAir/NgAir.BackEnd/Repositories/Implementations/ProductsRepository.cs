@@ -197,8 +197,9 @@ namespace NgAir.BackEnd.Repositories.Implementations
 
         public override async Task<ActionResponse<PagingResponse<Product>>> GetPagedAsync(PaginationDTO pagination)
         {
-            var products = await _context.Products.ToListAsync();
-            var page = PagedList<Product>.ToPagedList(products, pagination);
+            var queryable = _context.Products.AsQueryable();
+
+            var page = PagedList<Product>.ToPagedList(queryable.OrderByDynamic(pagination), pagination);
 
             var pagingResponse = new PagingResponse<Product>
             {

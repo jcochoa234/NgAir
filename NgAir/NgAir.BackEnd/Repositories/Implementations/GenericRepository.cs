@@ -128,7 +128,8 @@ namespace NgAir.BackEnd.Repositories.Implementations
         public virtual async Task<ActionResponse<PagingResponse<T>>> GetPagedAsync(PaginationDTO pagination)
         {
             var queryable = _entity.AsQueryable();
-            var page = PagedList<T>.ToPagedList(queryable, pagination);
+
+            var page = PagedList<T>.ToPagedList(queryable.OrderByDynamic(pagination), pagination);
 
             var pagingResponse = new PagingResponse<T>
             {

@@ -84,8 +84,9 @@ namespace NgAir.BackEnd.Repositories.Implementations
 
         public async Task<ActionResponse<PagingResponse<Country>>> GetPagedAsync(PaginationDTO pagination)
         {
-            var countries = await _context.Countries.ToListAsync();
-            var page = PagedList<Country>.ToPagedList(countries, pagination);
+            var queryable = _context.Countries.AsQueryable();
+
+            var page = PagedList<Country>.ToPagedList(queryable.OrderByDynamic(pagination), pagination);
 
             var pagingResponse = new PagingResponse<Country>
             {

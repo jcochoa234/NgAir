@@ -85,8 +85,9 @@ namespace NgAir.BackEnd.Repositories.Implementations
 
         public override async Task<ActionResponse<PagingResponse<State>>> GetPagedAsync(PaginationDTO pagination)
         {
-            var states = await _context.States.ToListAsync();
-            var page = PagedList<State>.ToPagedList(states, pagination);
+            var queryable = _context.States.AsQueryable();
+
+            var page = PagedList<State>.ToPagedList(queryable.OrderByDynamic(pagination), pagination);
 
             var pagingResponse = new PagingResponse<State>
             {

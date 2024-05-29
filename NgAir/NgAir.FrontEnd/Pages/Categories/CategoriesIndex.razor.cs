@@ -61,10 +61,10 @@ namespace NgAir.FrontEnd.Pages.Categories
         public string GetRandomuserParams(QueryModel<Category> queryModel)
         {
             List<string> query = new List<string>()
-        {
-            $"pageSize={queryModel.PageSize}",
-            $"pageNumber={queryModel.PageIndex}",
-        };
+            {
+                $"pageSize={queryModel.PageSize}",
+                $"pageNumber={queryModel.PageIndex}",
+            };
 
             queryModel.SortModel.ForEach(x =>
             {
