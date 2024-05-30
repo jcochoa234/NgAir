@@ -16,13 +16,13 @@ namespace NgAir.BackEnd.UnitsOfWork.Implementations
             _categoriesRepository = categoriesRepository;
         }
 
-        public override async Task<ActionResponse<IEnumerable<Category>>> GetAsync(PaginationDTO pagination) => await _categoriesRepository.GetAsync(pagination);
+        public async Task<ActionResponse<IEnumerable<Category>>> GetAsync(RequestParams requestParams) => await _categoriesRepository.GetAsync(requestParams);
 
         public async Task<IEnumerable<Category>> GetComboAsync() => await _categoriesRepository.GetComboAsync();
 
-        public async Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(PaginationDTO pagination) => await _categoriesRepository.GetPagedAsync(pagination);
+        public async Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(RequestParams requestParams) => await _categoriesRepository.GetPagedAsync(requestParams);
 
-        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination) => await _categoriesRepository.GetTotalPagesAsync(pagination);
+        public async Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams) => await _categoriesRepository.GetTotalPagesAsync(requestParams);
 
     }
 }

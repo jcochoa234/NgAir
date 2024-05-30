@@ -15,7 +15,7 @@ namespace NgAir.BackEnd.UnitsOfWork.Implementations
             _temporalOrdersRepository = temporalOrdersRepository;
         }
 
-        public async Task<ActionResponse<TemporalOrderDTO>> AddFullAsync(string email, TemporalOrderDTO temporalOrderDTO) => await _temporalOrdersRepository.AddFullAsync(email, temporalOrderDTO);
+        public async Task<ActionResponse<TemporalOrderDto>> AddFullAsync(string email, TemporalOrderDto temporalOrderDto) => await _temporalOrdersRepository.AddFullAsync(email, temporalOrderDto);
 
         public override async Task<ActionResponse<TemporalOrder>> GetAsync(int id) => await _temporalOrdersRepository.GetAsync(id);
 
@@ -23,7 +23,7 @@ namespace NgAir.BackEnd.UnitsOfWork.Implementations
 
         public async Task<ActionResponse<int>> GetCountAsync(string email) => await _temporalOrdersRepository.GetCountAsync(email);
 
-        public async Task<ActionResponse<TemporalOrder>> PutFullAsync(TemporalOrderDTO temporalOrderDTO) => await _temporalOrdersRepository.PutFullAsync(temporalOrderDTO);
+        public async Task<ActionResponse<TemporalOrder>> PutFullAsync(TemporalOrderDto temporalOrderDto) => await _temporalOrdersRepository.PutFullAsync(temporalOrderDto);
 
     }
 }

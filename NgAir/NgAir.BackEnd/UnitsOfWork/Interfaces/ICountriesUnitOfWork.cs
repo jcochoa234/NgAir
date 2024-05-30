@@ -11,13 +11,13 @@ namespace NgAir.BackEnd.UnitsOfWork.Interfaces
 
         Task<ActionResponse<Country>> GetAsync(int id);
 
-        Task<ActionResponse<IEnumerable<Country>>> GetAsync(PaginationDTO pagination);
+        Task<ActionResponse<IEnumerable<Country>>> GetAsync(RequestParams requestParams);
 
         Task<IEnumerable<Country>> GetComboAsync();
 
-        Task<ActionResponse<PagingResponse<Country>>> GetPagedAsync(PaginationDTO pagination);
+        Task<ActionResponse<PagingResponse<Country>>> GetPagedAsync(RequestParams requestParams);
 
-        Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination);
+        Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams);
 
     }
 }

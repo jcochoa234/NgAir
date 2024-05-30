@@ -2,7 +2,7 @@
 
 namespace NgAir.Shared.DTOs
 {
-    public class LoginDTO
+    public class LoginDto
     {
         [Required(ErrorMessage = "The field {0} is required.")]
         [EmailAddress(ErrorMessage = "You must enter a valid email address.")]

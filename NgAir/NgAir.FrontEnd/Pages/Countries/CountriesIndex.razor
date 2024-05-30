@@ -4,11 +4,11 @@
     <div class="card-header">
         <span>
             <i class="bi bi-globe-americas" /> Countries
-            <a class="btn btn-primary btn-sm float-end" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-square" /> New Country</a>
+            <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModal()">Add Category</Button>
         </span>
     </div>
     <div class="card-body">
-        <Filter PlaceHolder="Search country..." Callback=@FilterCallBack />
+@*         <Filter PlaceHolder="Search country..." Callback=@FilterCallBack />
         <GenericList MyList="Countries">
             <Body>
                 <NgAir.FrontEnd.Pages.Auth.ChangePassword Pagination CurrentPage="currentPage"
@@ -39,6 +39,36 @@
                     </tbody>
                 </table>
             </Body>
-        </GenericList>
+        </GenericList> *@
+
+        <Table TItem="Country"
+               DataSource="Countries"
+               Loading="Loading"
+               Total="Total"
+               OnChange="HandleTableChange"
+               RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
+            <ChildContent>
+                <Selection />
+                <AntDesign.PropertyColumn Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending">
+                    <a href="/countries/details/@context.Id">@context.Name</a>
+                </AntDesign.PropertyColumn>
+                <AntDesign.PropertyColumn Property="c=>c.StatesNumber">
+                    @context.StatesNumber
+                </AntDesign.PropertyColumn>
+                <ActionColumn Title="Action">
+                    <Space>
+                        <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Edit" OnClick="()=>ShowModal(context.Id, true)">Edit</Button></SpaceItem>
+                        <SpaceItem><Button Danger Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </ChildContent>
+            <PaginationTemplate>
+                <AntDesign.Pagination Total="Total"
+                    PageSize="context.PageSize"
+                    Current="context.PageIndex"
+                    ShowSizeChanger
+                    OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+        </Table>
     </div>
 </div>

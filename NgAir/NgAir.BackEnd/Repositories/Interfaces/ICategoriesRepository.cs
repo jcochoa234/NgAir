@@ -7,13 +7,13 @@ namespace NgAir.BackEnd.Repositories.Interfaces
 {
     public interface ICategoriesRepository
     {
-        Task<ActionResponse<IEnumerable<Category>>> GetAsync(PaginationDTO pagination);
+        Task<ActionResponse<IEnumerable<Category>>> GetAsync(RequestParams requestParams);
 
         Task<IEnumerable<Category>> GetComboAsync();
 
-        Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(PaginationDTO pagination);
+        Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(RequestParams requestParams);
 
-        Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination);
+        Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams);
 
     }
 }

@@ -6,17 +6,14 @@ using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
 using NgAir.Shared.Responses;
+using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace NgAir.BackEnd.Repositories.Implementations
 {
-    public class CountriesRepository : GenericRepository<Country>, ICountriesRepository
+    public class CountriesRepository(DataContext context) : GenericRepository<Country>(context), ICountriesRepository
     {
-        private readonly DataContext _context;
-
-        public CountriesRepository(DataContext context) : base(context)
-        {
-            _context = context;
-        }
+        private readonly DataContext _context = context;
 
         public override async Task<ActionResponse<IEnumerable<Country>>> GetAsync()
         {
@@ -53,15 +50,15 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
-        public override async Task<ActionResponse<IEnumerable<Country>>> GetAsync(PaginationDTO pagination)
+        public override async Task<ActionResponse<IEnumerable<Country>>> GetAsync(RequestParams requestParams)
         {
             var queryable = _context.Countries
                 .Include(c => c.States)
                 .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            if (!string.IsNullOrWhiteSpace(requestParams.Filter))
             {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(requestParams.Filter.ToLower()));
             }
 
             return new ActionResponse<IEnumerable<Country>>
@@ -69,11 +66,10 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 WasSuccess = true,
                 Result = await queryable
                     .OrderBy(x => x.Name)
-                    .Paginate(pagination)
+                    .Paginate(requestParams)
                     .ToListAsync()
             };
         }
-
 
         public async Task<IEnumerable<Country>> GetComboAsync()
         {
@@ -82,11 +78,31 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<ActionResponse<PagingResponse<Country>>> GetPagedAsync(PaginationDTO pagination)
+        public override Task<ActionResponse<PagingResponse<Country>>> GetPagedAsync(RequestParams requestParams)
         {
-            var queryable = _context.Countries.AsQueryable();
+            Expression<Func<Country, bool>>? filters = null;
 
-            var page = PagedList<Country>.ToPagedList(queryable.OrderByDynamic(pagination), pagination);
+            List<ColumnFilter> columnFilters = [];
+            if (!String.IsNullOrEmpty(requestParams.ColumnFilters))
+            {
+                try
+                {
+                    columnFilters.AddRange(JsonSerializer.Deserialize<List<ColumnFilter>>(requestParams.ColumnFilters)!);
+                }
+                catch (Exception)
+                {
+                    columnFilters = [];
+                }
+            }
+            if (columnFilters.Count > 0)
+            {
+                var customFilter = CustomExpressionFilter<Country>.CustomFilter(columnFilters, "country");
+                filters = customFilter;
+            }
+
+            var queryable = _context.Countries.AsQueryable().FilterDynamic(filters!);
+
+            var page = PagedList<Country>.ToPagedList(queryable.OrderByDynamic(requestParams), requestParams);
 
             var pagingResponse = new PagingResponse<Country>
             {
@@ -97,24 +113,24 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 Items = page.ToList(),
             };
 
-            return new ActionResponse<PagingResponse<Country>>
+            return Task.FromResult(new ActionResponse<PagingResponse<Country>>
             {
                 WasSuccess = true,
                 Result = pagingResponse
-            };
+            });
         }
 
-        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
+        public override async Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams)
         {
             var queryable = _context.Countries.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            if (!string.IsNullOrWhiteSpace(requestParams.Filter))
             {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(requestParams.Filter.ToLower()));
             }
 
             double count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling(count / pagination.PageSize);
+            int totalPages = (int)Math.Ceiling(count / requestParams.PageSize);
             return new ActionResponse<int>
             {
                 WasSuccess = true,

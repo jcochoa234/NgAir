@@ -10,7 +10,7 @@ namespace NgAir.FrontEnd.Pages.Products
     [Authorize(Roles = "Admin")]
     public partial class ProductCreate
     {
-        private ProductDTO productDTO = new()
+        private ProductDto productDto = new()
         {
             ProductCategoryIds = new List<int>(),
             ProductImages = new List<string>()
@@ -42,7 +42,7 @@ namespace NgAir.FrontEnd.Pages.Products
 
         private async Task CreateAsync()
         {
-            var httpActionResponse = await Repository.PostAsync("/api/products/full", productDTO);
+            var httpActionResponse = await Repository.PostAsync("/api/products/full", productDto);
             if (httpActionResponse.Error)
             {
                 var message = await httpActionResponse.GetErrorMessageAsync();

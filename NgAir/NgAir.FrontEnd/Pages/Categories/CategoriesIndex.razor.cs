@@ -2,10 +2,12 @@ using AntDesign;
 using AntDesign.TableModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using NgAir.FrontEnd.Helpers;
 using NgAir.FrontEnd.Paging;
 using NgAir.FrontEnd.Repositories;
 using NgAir.Shared.Entities;
 using System.Net;
+using System.Text.Json;
 
 namespace NgAir.FrontEnd.Pages.Categories
 {
@@ -14,27 +16,19 @@ namespace NgAir.FrontEnd.Pages.Categories
     {
 
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
+        private List<Category>? Categories { get; set; }
 
-        public List<Category>? Categories { get; set; }
+        private bool Loading = false;
 
+        private int Total;
 
-        public bool Loading = false;
-
-        public int Total;
-        public IEnumerable<Category> _items;
-
-        TableFilter<string>[] _genderFilters = new[]
-        {
-            new TableFilter<string> { Text = "Male", Value = "male" },
-            new TableFilter<string> { Text = "Female", Value = "female" },
-        };
+        private IEnumerable<Category>? _items;
 
 
-        public async Task HandleTableChange(QueryModel<Category> queryModel)
+        private async Task HandleTableChange(QueryModel<Category> queryModel)
         {
             Loading = true;
 
@@ -55,16 +49,15 @@ namespace NgAir.FrontEnd.Pages.Categories
             Categories = responseHttp.Response?.Items.ToList();
             Loading = false;
             Total = (int)(responseHttp.Response?.Total!);
-
         }
 
-        public string GetRandomuserParams(QueryModel<Category> queryModel)
+        private static string GetRandomuserParams(QueryModel<Category> queryModel)
         {
-            List<string> query = new List<string>()
-            {
+            List<string> query =
+            [
                 $"pageSize={queryModel.PageSize}",
                 $"pageNumber={queryModel.PageIndex}",
-            };
+            ];
 
             queryModel.SortModel.ForEach(x =>
             {
@@ -72,20 +65,26 @@ namespace NgAir.FrontEnd.Pages.Categories
                 query.Add($"sortOrder={x.Sort}");
             });
 
+            List<ColumnFilter> columnFilters = [];
             queryModel.FilterModel.ForEach(filter =>
             {
                 filter.SelectedValues.ForEach(value =>
                 {
-                    query.Add($"{filter.FieldName.ToLower()}={value}");
+                    columnFilters.Add(new ColumnFilter { id = filter.FieldName.ToLower(), value = value });
                 });
             });
+
+            if (columnFilters.Count > 0)
+            {
+                var json = JsonSerializer.Serialize(columnFilters);
+                query.Add($"ColumnFilters=" + json);
+            }
 
             return string.Join('&', query);
         }
 
-        private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+        private void ShowModal(int id = 0, bool isEdit = false)
         {
-
             var modalConfig = new AntDesign.ModalOptions
             {
                 Title = isEdit ? "Edit Category" : "Create Category",
@@ -105,7 +104,6 @@ namespace NgAir.FrontEnd.Pages.Categories
             }
         }
 
-
         private async Task DeleteAsycn(Category category)
         {
 
@@ -115,7 +113,6 @@ namespace NgAir.FrontEnd.Pages.Categories
                 OkText = "Delete",
                 Content = $"Are you sure you want to delete the category: {category.Name}?",
                 Centered = true,
-                //Icon = @<Icon Type="exclamation-circle" Theme="outline"/>,
                 Button1Props =
                 {
                     Danger = true,
@@ -138,7 +135,7 @@ namespace NgAir.FrontEnd.Pages.Categories
                 {
                     if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
                     {
-                        NavigationManager.NavigateTo("/categories2");
+                        NavigationManager.NavigateTo("/categories");
                     }
                     else
                     {
@@ -151,14 +148,8 @@ namespace NgAir.FrontEnd.Pages.Categories
                             OkText = "Close"
                         });
                     }
-                    return;
                 }
             }
-            else
-            {
-                return;
-            }
-            return;
         }
 
     }

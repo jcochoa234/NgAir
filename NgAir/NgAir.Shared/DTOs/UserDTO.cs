@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NgAir.Shared.DTOs
 {
-    public class UserDTO : User
+    public class UserDto : User
     {
         [DataType(DataType.Password)]
         [Display(Name = "Password")]

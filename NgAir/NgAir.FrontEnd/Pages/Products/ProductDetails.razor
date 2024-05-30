@@ -53,18 +53,18 @@ else
                     </div>
                 </div>
                 <div class="col-6">
-                    <EditForm Model="TemporalOrderDTO" OnValidSubmit="AddToCartAsync">
+                    <EditForm Model="TemporalOrderDto" OnValidSubmit="AddToCartAsync">
                         <DataAnnotationsValidator />
                         <div class="mb-3">
                             <label>Quantity:</label>
                             <div>
-                                <AntDesign.InputNumber class="form-control" @bind-Value="@TemporalOrderDTO.Quantity" />
-                                <ValidationMessage For="@(() => TemporalOrderDTO.Quantity)" />
+                                <AntDesign.InputNumber class="form-control" @bind-Value="@TemporalOrderDto.Quantity" />
+                                <ValidationMessage For="@(() => TemporalOrderDto.Quantity)" />
                             </div>
                             <label>Remarks:</label>
                             <div>
-                                <InputText class="form-control" @bind-Value="@TemporalOrderDTO.Remarks" />
-                                <ValidationMessage For="@(() => TemporalOrderDTO.Remarks)" />
+                                <InputText class="form-control" @bind-Value="@TemporalOrderDto.Remarks" />
+                                <ValidationMessage For="@(() => TemporalOrderDto.Remarks)" />
                             </div>
                         </div>
                         <button class="btn btn-primary" type="submit"><i class="bi bi-cart-plus" /> Add To Cart</button>

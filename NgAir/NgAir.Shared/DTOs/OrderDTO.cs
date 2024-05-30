@@ -2,7 +2,7 @@
 
 namespace NgAir.Shared.DTOs
 {
-    public class OrderDTO
+    public class OrderDto
     {
         public int Id { get; set; }
 

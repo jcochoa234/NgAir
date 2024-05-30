@@ -43,9 +43,9 @@ namespace NgAir.BackEnd.Controllers
 
 
         [HttpGet]
-        public override async Task<IActionResult> GetAsync(PaginationDTO pagination)
+        public override async Task<IActionResult> GetAsync(RequestParams requestParams)
         {
-            var response = await _countriesUnitOfWork.GetAsync(pagination);
+            var response = await _countriesUnitOfWork.GetAsync(requestParams);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -63,9 +63,9 @@ namespace NgAir.BackEnd.Controllers
 
 
         [HttpGet("Paged")]
-        public override async Task<IActionResult> GetPagedAsync([FromQuery] PaginationDTO pagination)
+        public override async Task<IActionResult> GetPagedAsync([FromQuery] RequestParams requestParams)
         {
-            var response = await _countriesUnitOfWork.GetPagedAsync(pagination);
+            var response = await _countriesUnitOfWork.GetPagedAsync(requestParams);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -74,9 +74,9 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpGet("totalPages")]
-        public override async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
+        public override async Task<IActionResult> GetPagesAsync([FromQuery] RequestParams requestParams)
         {
-            var action = await _countriesUnitOfWork.GetTotalPagesAsync(pagination);
+            var action = await _countriesUnitOfWork.GetTotalPagesAsync(requestParams);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);

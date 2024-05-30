@@ -17,7 +17,7 @@ namespace NgAir.FrontEnd.Pages.Products
         private List<MultipleSelectorModel> nonSelected { get; set; } = new();
 
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
-        [Parameter, EditorRequired] public ProductDTO ProductDTO { get; set; } = null!;
+        [Parameter, EditorRequired] public ProductDto ProductDto { get; set; } = null!;
         [Parameter, EditorRequired] public EventCallback OnValidSubmit { get; set; }
         [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
         [Parameter, EditorRequired] public List<Category> NonSelectedCategories { get; set; } = new();
@@ -30,7 +30,7 @@ namespace NgAir.FrontEnd.Pages.Products
 
         protected override void OnInitialized()
         {
-            editContext = new(ProductDTO);
+            editContext = new(ProductDto);
 
             selected = SelectedCategories.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
             nonSelected = NonSelectedCategories.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
@@ -38,18 +38,18 @@ namespace NgAir.FrontEnd.Pages.Products
 
         private void ImageSelected(string imagenBase64)
         {
-            if (ProductDTO.ProductImages is null)
+            if (ProductDto.ProductImages is null)
             {
-                ProductDTO.ProductImages = new List<string>();
+                ProductDto.ProductImages = new List<string>();
             }
 
-            ProductDTO.ProductImages!.Add(imagenBase64);
+            ProductDto.ProductImages!.Add(imagenBase64);
             imageUrl = null;
         }
 
         private async Task OnDataAnnotationsValidatedAsync()
         {
-            ProductDTO.ProductCategoryIds = selected.Select(x => int.Parse(x.Key)).ToList();
+            ProductDto.ProductCategoryIds = selected.Select(x => int.Parse(x.Key)).ToList();
             await OnValidSubmit.InvokeAsync();
         }
 

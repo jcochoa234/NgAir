@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NgAir.Shared.DTOs
 {
-    public class ProductDTO
+    public class ProductDto
     {
         public int Id { get; set; }
 

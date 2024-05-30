@@ -6,7 +6,7 @@ namespace NgAir.BackEnd.UnitsOfWork.Interfaces
 {
     public interface ITemporalOrdersUnitOfWork
     {
-        Task<ActionResponse<TemporalOrderDTO>> AddFullAsync(string email, TemporalOrderDTO temporalOrderDTO);
+        Task<ActionResponse<TemporalOrderDto>> AddFullAsync(string email, TemporalOrderDto temporalOrderDto);
 
         Task<ActionResponse<TemporalOrder>> GetAsync(int id);
 
@@ -14,7 +14,7 @@ namespace NgAir.BackEnd.UnitsOfWork.Interfaces
 
         Task<ActionResponse<int>> GetCountAsync(string email);
 
-        Task<ActionResponse<TemporalOrder>> PutFullAsync(TemporalOrderDTO temporalOrderDTO);
+        Task<ActionResponse<TemporalOrder>> PutFullAsync(TemporalOrderDto temporalOrderDto);
 
     }
 }

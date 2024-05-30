@@ -10,7 +10,7 @@ namespace NgAir.FrontEnd.Pages.Products
     [Authorize(Roles = "Admin")]
     public partial class ProductEdit
     {
-        private ProductDTO productDTO = new()
+        private ProductDto productDto = new()
         {
             ProductCategoryIds = new List<int>(),
             ProductImages = new List<string>()
@@ -34,18 +34,18 @@ namespace NgAir.FrontEnd.Pages.Products
 
         private async Task AddImageAsync()
         {
-            if (productDTO.ProductImages is null || productDTO.ProductImages.Count == 0)
+            if (productDto.ProductImages is null || productDto.ProductImages.Count == 0)
             {
                 return;
             }
 
-            var imageDTO = new ImageDTO
+            var imageDto = new ImageDto
             {
                 ProductId = ProductId,
-                Images = productDTO.ProductImages!
+                Images = productDto.ProductImages!
             };
 
-            var httpActionResponse = await Repository.PostAsync<ImageDTO, ImageDTO>("/api/products/addImages", imageDTO);
+            var httpActionResponse = await Repository.PostAsync<ImageDto, ImageDto>("/api/products/addImages", imageDto);
             if (httpActionResponse.Error)
             {
                 var message = await httpActionResponse.GetErrorMessageAsync();
@@ -53,7 +53,7 @@ namespace NgAir.FrontEnd.Pages.Products
                 return;
             }
 
-            productDTO.ProductImages = httpActionResponse.Response!.Images;
+            productDto.ProductImages = httpActionResponse.Response!.Images;
             var toast = SweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,
@@ -66,18 +66,18 @@ namespace NgAir.FrontEnd.Pages.Products
 
         private async Task RemoveImageAsyc()
         {
-            if (productDTO.ProductImages is null || productDTO.ProductImages.Count == 0)
+            if (productDto.ProductImages is null || productDto.ProductImages.Count == 0)
             {
                 return;
             }
 
-            var imageDTO = new ImageDTO
+            var imageDto = new ImageDto
             {
                 ProductId = ProductId,
-                Images = productDTO.ProductImages!
+                Images = productDto.ProductImages!
             };
 
-            var httpActionResponse = await Repository.PostAsync<ImageDTO, ImageDTO>("/api/products/removeLastImage", imageDTO);
+            var httpActionResponse = await Repository.PostAsync<ImageDto, ImageDto>("/api/products/removeLastImage", imageDto);
             if (httpActionResponse.Error)
             {
                 var message = await httpActionResponse.GetErrorMessageAsync();
@@ -85,7 +85,7 @@ namespace NgAir.FrontEnd.Pages.Products
                 return;
             }
 
-            productDTO.ProductImages = httpActionResponse.Response!.Images;
+            productDto.ProductImages = httpActionResponse.Response!.Images;
             var toast = SweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,
@@ -110,13 +110,13 @@ namespace NgAir.FrontEnd.Pages.Products
             }
 
             product = httpActionResponse.Response!;
-            productDTO = ToProductDTO(product);
+            productDto = ToProductDto(product);
             loading = false;
         }
 
-        private ProductDTO ToProductDTO(Product product)
+        private ProductDto ToProductDto(Product product)
         {
-            return new ProductDTO
+            return new ProductDto
             {
                 Description = product.Description,
                 Id = product.Id,
@@ -159,7 +159,7 @@ namespace NgAir.FrontEnd.Pages.Products
 
         private async Task SaveChangesAsync()
         {
-            var httpActionResponse = await Repository.PutAsync("/api/products/full", productDTO);
+            var httpActionResponse = await Repository.PutAsync("/api/products/full", productDto);
             if (httpActionResponse.Error)
             {
                 var message = await httpActionResponse.GetErrorMessageAsync();

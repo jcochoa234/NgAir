@@ -14,11 +14,11 @@ namespace NgAir.BackEnd.UnitsOfWork.Interfaces
 
         Task<ActionResponse<T>> GetAsync(int id);
 
-        Task<ActionResponse<IEnumerable<T>>> GetAsync(PaginationDTO pagination);
+        Task<ActionResponse<IEnumerable<T>>> GetAsync(RequestParams requestParams);
 
-        Task<ActionResponse<PagingResponse<T>>> GetPagedAsync(PaginationDTO pagination);
+        Task<ActionResponse<PagingResponse<T>>> GetPagedAsync(RequestParams requestParams);
 
-        Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination);
+        Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams);
 
         Task<ActionResponse<T>> UpdateAsync(T model);
 

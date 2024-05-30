@@ -10,7 +10,7 @@ namespace NgAir.FrontEnd.Pages.Auth
 {
     public partial class Login
     {
-        private LoginDTO loginDTO = new();
+        private LoginDto loginDto = new();
         private bool wasClose;
 
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
@@ -33,7 +33,7 @@ namespace NgAir.FrontEnd.Pages.Auth
                 return;
             }
 
-            var responseHttp = await Repository.PostAsync<LoginDTO, TokenDTO>("/api/accounts/Login", loginDTO);
+            var responseHttp = await Repository.PostAsync<LoginDto, TokenDto>("/api/accounts/Login", loginDto);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();

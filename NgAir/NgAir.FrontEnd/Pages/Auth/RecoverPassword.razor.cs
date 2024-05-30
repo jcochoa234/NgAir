@@ -7,7 +7,7 @@ namespace NgAir.FrontEnd.Pages.Auth
 {
     public partial class RecoverPassword
     {
-        private EmailDTO emailDTO = new();
+        private EmailDto emailDto = new();
         private bool loading;
 
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
@@ -17,7 +17,7 @@ namespace NgAir.FrontEnd.Pages.Auth
         private async Task SendRecoverPasswordEmailTokenAsync()
         {
             loading = true;
-            var responseHttp = await Repository.PostAsync("/api/accounts/RecoverPassword", emailDTO);
+            var responseHttp = await Repository.PostAsync("/api/accounts/RecoverPassword", emailDto);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();

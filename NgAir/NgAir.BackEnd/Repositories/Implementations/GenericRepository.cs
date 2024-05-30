@@ -5,6 +5,8 @@ using NgAir.BackEnd.Paging;
 using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Responses;
+using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace NgAir.BackEnd.Repositories.Implementations
 {
@@ -112,7 +114,7 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
-        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(PaginationDTO pagination)
+        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(RequestParams requestParams)
         {
             var queryable = _entity.AsQueryable();
 
@@ -120,16 +122,36 @@ namespace NgAir.BackEnd.Repositories.Implementations
             {
                 WasSuccess = true,
                 Result = await queryable
-                    .Paginate(pagination)
+                    .Paginate(requestParams)
                     .ToListAsync()
             };
         }
 
-        public virtual async Task<ActionResponse<PagingResponse<T>>> GetPagedAsync(PaginationDTO pagination)
+        public virtual Task<ActionResponse<PagingResponse<T>>> GetPagedAsync(RequestParams requestParams)
         {
-            var queryable = _entity.AsQueryable();
+            Expression<Func<T, bool>>? filters = null;
 
-            var page = PagedList<T>.ToPagedList(queryable.OrderByDynamic(pagination), pagination);
+            List<ColumnFilter> columnFilters = [];
+            if (!String.IsNullOrEmpty(requestParams.ColumnFilters))
+            {
+                try
+                {
+                    columnFilters.AddRange(JsonSerializer.Deserialize<List<ColumnFilter>>(requestParams.ColumnFilters)!);
+                }
+                catch (Exception)
+                {
+                    columnFilters = [];
+                }
+            }
+            if (columnFilters.Count > 0)
+            {
+                var customFilter = CustomExpressionFilter<T>.CustomFilter(columnFilters, "");
+                filters = customFilter;
+            }
+
+            var queryable = _entity.AsQueryable().FilterDynamic(filters!);
+
+            var page = PagedList<T>.ToPagedList(queryable.OrderByDynamic(requestParams), requestParams);
 
             var pagingResponse = new PagingResponse<T>
             {
@@ -140,18 +162,18 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 Items = page.ToList(),
             };
 
-            return new ActionResponse<PagingResponse<T>>
+            return Task.FromResult(new ActionResponse<PagingResponse<T>>
             {
                 WasSuccess = true,
                 Result = pagingResponse
-            };
+            });
         }
 
-        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
+        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams)
         {
             var queryable = _entity.AsQueryable();
             var count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling((double)count / pagination.PageSize);
+            int totalPages = (int)Math.Ceiling((double)count / requestParams.PageSize);
             return new ActionResponse<int>
             {
                 WasSuccess = true,

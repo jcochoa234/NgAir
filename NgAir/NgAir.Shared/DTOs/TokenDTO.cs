@@ -1,6 +1,6 @@
 ﻿namespace NgAir.Shared.DTOs
 {
-    public class TokenDTO
+    public class TokenDto
     {
         public string Token { get; set; } = null!;
 

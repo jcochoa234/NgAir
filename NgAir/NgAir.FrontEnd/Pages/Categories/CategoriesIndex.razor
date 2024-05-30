@@ -4,27 +4,35 @@
     <div class="card-header">
         <span>
             <i class="bi bi-list-check"></i> Categories
-            <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModalAsync()">Add Category</Button>
+            <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModal()">Add Category</Button>
         </span>
     </div>
     <div class="card-body">
-
         <Table TItem="Category"
                DataSource="Categories"
                Loading="Loading"
                Total="Total"
                OnChange="HandleTableChange"
                RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
-            <Selection />
-            <AntDesign.PropertyColumn Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending">
-                @context.Name
-            </AntDesign.PropertyColumn>
-            <ActionColumn Title="Action">
-                <Space>
-                    <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Edit" OnClick="()=>ShowModalAsync(context.Id, true)">Edit</Button></SpaceItem>
-                    <SpaceItem><Button Danger Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
-                </Space>
-            </ActionColumn>
+            <ChildContent>
+                <Selection />
+                <AntDesign.PropertyColumn Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending" Filterable>
+                    @context.Name
+                </AntDesign.PropertyColumn>
+                <ActionColumn Title="Action">
+                    <Space>
+                        <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Edit" OnClick="()=>ShowModal(context.Id, true)">Edit</Button></SpaceItem>
+                        <SpaceItem><Button Danger Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </ChildContent>
+            <PaginationTemplate>
+                <AntDesign.Pagination Total="Total"
+                    PageSize="context.PageSize"
+                    Current="context.PageIndex"
+                    ShowSizeChanger
+                    OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
         </Table>
     </div>
 </div>

@@ -6,34 +6,30 @@ using NgAir.BackEnd.Repositories.Interfaces;
 using NgAir.Shared.DTOs;
 using NgAir.Shared.Entities;
 using NgAir.Shared.Responses;
+using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace NgAir.BackEnd.Repositories.Implementations
 {
-    public class CategoriesRepository : GenericRepository<Category>, ICategoriesRepository
+    public class CategoriesRepository(DataContext context) : GenericRepository<Category>(context), ICategoriesRepository
     {
-        private readonly DataContext _context;
+        private readonly DataContext _context = context;
 
-        public CategoriesRepository(DataContext context) : base(context)
-        {
-            _context = context;
-        }
-
-        public override async Task<ActionResponse<IEnumerable<Category>>> GetAsync(PaginationDTO pagination)
+        public override async Task<ActionResponse<IEnumerable<Category>>> GetAsync(RequestParams requestParams)
         {
             var queryable = _context.Categories.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            if (!string.IsNullOrWhiteSpace(requestParams.Filter))
             {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(requestParams.Filter.ToLower()));
             }
 
             return new ActionResponse<IEnumerable<Category>>
             {
                 WasSuccess = true,
                 Result = await queryable
-                    //.OrderBy(x => x.Name)
-                    .OrderByDynamic(pagination)
-                    .Paginate(pagination)
+                    .OrderByDynamic(requestParams)
+                    .Paginate(requestParams)
                     .ToListAsync()
             };
         }
@@ -45,11 +41,31 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public override async Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(PaginationDTO pagination)
+        public override Task<ActionResponse<PagingResponse<Category>>> GetPagedAsync(RequestParams requestParams)
         {
-            var queryable = _context.Categories.AsQueryable();
+            Expression<Func<Category, bool>>? filters = null;
 
-            var page = PagedList<Category>.ToPagedList(queryable.OrderByDynamic(pagination), pagination);
+            List<ColumnFilter> columnFilters = [];
+            if (!String.IsNullOrEmpty(requestParams.ColumnFilters))
+            {
+                try
+                {
+                    columnFilters.AddRange(JsonSerializer.Deserialize<List<ColumnFilter>>(requestParams.ColumnFilters)!);
+                }
+                catch (Exception)
+                {
+                    columnFilters = [];
+                }
+            }
+            if (columnFilters.Count > 0)
+            {
+                var customFilter = CustomExpressionFilter<Category>.CustomFilter(columnFilters, "category");
+                filters = customFilter;
+            }
+
+            var queryable = _context.Categories.AsQueryable().FilterDynamic(filters!);
+
+            var page = PagedList<Category>.ToPagedList(queryable.OrderByDynamic(requestParams), requestParams);
 
             var pagingResponse = new PagingResponse<Category>
             {
@@ -60,24 +76,24 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 Items = page.ToList(),
             };
 
-            return new ActionResponse<PagingResponse<Category>>
+            return Task.FromResult(new ActionResponse<PagingResponse<Category>>
             {
                 WasSuccess = true,
                 Result = pagingResponse
-            };
+            });
         }
 
-        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
+        public override async Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams)
         {
             var queryable = _context.Categories.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            if (!string.IsNullOrWhiteSpace(requestParams.Filter))
             {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(requestParams.Filter.ToLower()));
             }
 
             double count = await queryable.CountAsync();
-            int totalPages = (int)Math.Ceiling(count / pagination.PageSize);
+            int totalPages = (int)Math.Ceiling(count / requestParams.PageSize);
             return new ActionResponse<int>
             {
                 WasSuccess = true,

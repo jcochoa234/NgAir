@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-12">
 
-        <EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
+        <EditForm Model="loginDto" OnValidSubmit="LoginAsync">
             <DataAnnotationsValidator />
 
             <div class="card bg-light">
@@ -18,15 +18,15 @@
                     <div class="mb-3">
                         <label>Email:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@loginDTO.Email" />
-                            <ValidationMessage For="@(() => loginDTO.Email)" />
+                            <InputText class="form-control" @bind-Value="@loginDto.Email" />
+                            <ValidationMessage For="@(() => loginDto.Email)" />
                         </div>
                     </div>
                     <div class="mb-3">
                         <label>Password:</label>
                         <div>
-                            <InputText type="password" class="form-control" @bind-Value="@loginDTO.Password" />
-                            <ValidationMessage For="@(() => loginDTO.Password)" />
+                            <InputText type="password" class="form-control" @bind-Value="@loginDto.Password" />
+                            <ValidationMessage For="@(() => loginDto.Password)" />
                         </div>
                     </div>
                 </div>

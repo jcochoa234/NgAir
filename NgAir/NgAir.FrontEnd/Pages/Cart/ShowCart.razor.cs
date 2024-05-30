@@ -17,7 +17,7 @@ namespace NgAir.FrontEnd.Pages.Cart
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private IRepository Repository { get; set; } = null!;
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
-        public OrderDTO OrderDTO { get; set; } = new();
+        public OrderDto OrderDto { get; set; } = new();
 
         protected override async Task OnInitializedAsync()
         {

@@ -1,6 +1,6 @@
 ﻿namespace NgAir.Shared.DTOs
 {
-    public class TemporalOrderDTO
+    public class TemporalOrderDto
     {
         public int Id { get; set; }
 

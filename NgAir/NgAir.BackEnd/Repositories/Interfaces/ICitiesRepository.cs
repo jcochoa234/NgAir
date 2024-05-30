@@ -7,13 +7,13 @@ namespace NgAir.BackEnd.Repositories.Interfaces
 {
     public interface ICitiesRepository
     {
-        Task<ActionResponse<IEnumerable<City>>> GetAsync(PaginationDTO pagination);
+        Task<ActionResponse<IEnumerable<City>>> GetAsync(RequestParams requestParams);
 
         Task<IEnumerable<City>> GetComboAsync(int stateId);
 
-        Task<ActionResponse<PagingResponse<City>>> GetPagedAsync(PaginationDTO pagination);
+        Task<ActionResponse<PagingResponse<City>>> GetPagedAsync(RequestParams requestParams);
 
-        Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination);
+        Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams);
 
     }
 }

@@ -23,13 +23,13 @@ else
                             <h3>Value: <strong>@($"{sumValue:C2}")</strong></h3>
                         </div>
                     </div>
-                    <EditForm Model="OrderDTO" OnValidSubmit="ConfirmOrderAsync">
+                    <EditForm Model="OrderDto" OnValidSubmit="ConfirmOrderAsync">
                         <DataAnnotationsValidator />
                         <div class="mb-3">
                             <label>Remarks:</label>
                             <div>
-                                <InputText class="form-control" @bind-Value="@OrderDTO.Remarks" />
-                                <ValidationMessage For="@(() => OrderDTO.Remarks)" />
+                                <InputText class="form-control" @bind-Value="@OrderDto.Remarks" />
+                                <ValidationMessage For="@(() => OrderDto.Remarks)" />
                             </div>
                         </div>
                         <button class="btn btn-primary mb-3" type="submit"><i class="bi bi-check" /> Confirm Order</button>

@@ -2,7 +2,7 @@
 
 namespace NgAir.Shared.DTOs
 {
-    public class ImageDTO
+    public class ImageDto
     {
         [Required] public int ProductId { get; set; }
 

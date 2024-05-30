@@ -123,7 +123,7 @@ namespace NgAir.FrontEnd.Pages.Auth
 
         private async Task SaveUserAsync()
         {
-            var responseHttp = await Repository.PutAsync<User, TokenDTO>("/api/accounts", user!);
+            var responseHttp = await Repository.PutAsync<User, TokenDto>("/api/accounts", user!);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();

@@ -8,7 +8,7 @@ namespace NgAir.FrontEnd.Pages.Auth
 {
     public partial class ResetPassword
     {
-        private ResetPasswordDTO resetPasswordDTO = new();
+        private ResetPasswordDto resetPasswordDto = new();
         private bool loading;
 
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
@@ -19,9 +19,9 @@ namespace NgAir.FrontEnd.Pages.Auth
 
         private async Task ChangePasswordAsync()
         {
-            resetPasswordDTO.Token = Token;
+            resetPasswordDto.Token = Token;
             loading = true;
-            var responseHttp = await Repository.PostAsync("/api/accounts/ResetPassword", resetPasswordDTO);
+            var responseHttp = await Repository.PostAsync("/api/accounts/ResetPassword", resetPasswordDto);
             loading = false;
             if (responseHttp.Error)
             {

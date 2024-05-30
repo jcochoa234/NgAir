@@ -7,7 +7,7 @@ namespace NgAir.FrontEnd.Pages.Auth
 {
     public partial class ResendConfirmationEmailToken
     {
-        private EmailDTO emailDTO = new();
+        private EmailDto emailDto = new();
         private bool loading;
 
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
@@ -17,7 +17,7 @@ namespace NgAir.FrontEnd.Pages.Auth
         private async Task ResendConfirmationEmailTokenAsync()
         {
             loading = true;
-            var responseHttp = await Repository.PostAsync("/api/accounts/ResedToken", emailDTO);
+            var responseHttp = await Repository.PostAsync("/api/accounts/ResedToken", emailDto);
             loading = false;
             if (responseHttp.Error)
             {

@@ -23,7 +23,7 @@ namespace NgAir.FrontEnd.Pages.Products
         [Parameter] public int ProductId { get; set; }
         [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
         [CascadingParameter] private IModalService Modal { get; set; } = default!;
-        public TemporalOrderDTO TemporalOrderDTO { get; set; } = new();
+        public TemporalOrderDto TemporalOrderDto { get; set; } = new();
 
         protected override async Task OnParametersSetAsync()
         {
@@ -76,9 +76,9 @@ namespace NgAir.FrontEnd.Pages.Products
                 return;
             }
 
-            TemporalOrderDTO.ProductId = ProductId;
+            TemporalOrderDto.ProductId = ProductId;
 
-            var httpActionResponse = await repository.PostAsync("/api/temporalOrders/full", TemporalOrderDTO);
+            var httpActionResponse = await repository.PostAsync("/api/temporalOrders/full", TemporalOrderDto);
             if (httpActionResponse.Error)
             {
                 var message = await httpActionResponse.GetErrorMessageAsync();

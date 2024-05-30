@@ -14,7 +14,7 @@ namespace NgAir.FrontEnd.Pages.Cart
         private List<string>? images;
         private bool loading = true;
         private Product? product;
-        private TemporalOrderDTO? temporalOrderDTO;
+        private TemporalOrderDto? temporalOrderDto;
 
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private IRepository Repository { get; set; } = null!;
@@ -40,7 +40,7 @@ namespace NgAir.FrontEnd.Pages.Cart
             }
 
             var temporalOrder = httpResponse.Response!;
-            temporalOrderDTO = new TemporalOrderDTO
+            temporalOrderDto = new TemporalOrderDto
             {
                 Id = temporalOrder.Id,
                 ProductId = temporalOrder.ProductId,
@@ -55,7 +55,7 @@ namespace NgAir.FrontEnd.Pages.Cart
 
         public async Task UpdateCartAsync()
         {
-            var httpResponse = await Repository.PutAsync("/api/temporalOrders/full", temporalOrderDTO);
+            var httpResponse = await Repository.PutAsync("/api/temporalOrders/full", temporalOrderDto);
             if (httpResponse.Error)
             {
                 var message = await httpResponse.GetErrorMessageAsync();

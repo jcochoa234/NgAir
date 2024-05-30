@@ -20,13 +20,13 @@ namespace NgAir.BackEnd.UnitsOfWork.Implementations
 
         public override async Task<ActionResponse<Country>> GetAsync(int id) => await _countriesRepository.GetAsync(id);
 
-        public override async Task<ActionResponse<IEnumerable<Country>>> GetAsync(PaginationDTO pagination) => await _countriesRepository.GetAsync(pagination);
+        public override async Task<ActionResponse<IEnumerable<Country>>> GetAsync(RequestParams requestParams) => await _countriesRepository.GetAsync(requestParams);
 
         public async Task<IEnumerable<Country>> GetComboAsync() => await _countriesRepository.GetComboAsync();
 
-        public async Task<ActionResponse<PagingResponse<Country>>> GetPagedAsync(PaginationDTO pagination) => await _countriesRepository.GetPagedAsync(pagination);
+        public async Task<ActionResponse<PagingResponse<Country>>> GetPagedAsync(RequestParams requestParams) => await _countriesRepository.GetPagedAsync(requestParams);
 
-        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination) => await _countriesRepository.GetTotalPagesAsync(pagination);
+        public override async Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams) => await _countriesRepository.GetTotalPagesAsync(requestParams);
 
     }
 }

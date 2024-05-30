@@ -33,7 +33,7 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPost("RecoverPassword")]
-        public async Task<IActionResult> RecoverPasswordAsync([FromBody] EmailDTO model)
+        public async Task<IActionResult> RecoverPasswordAsync([FromBody] EmailDto model)
         {
             var user = await _usersUnitOfWork.GetUserAsync(model.Email);
             if (user == null)
@@ -63,7 +63,7 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordDTO model)
+        public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordDto model)
         {
             var user = await _usersUnitOfWork.GetUserAsync(model.Email);
             if (user == null)
@@ -81,7 +81,7 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPost("ResedToken")]
-        public async Task<IActionResult> ResedTokenAsync([FromBody] EmailDTO model)
+        public async Task<IActionResult> ResedTokenAsync([FromBody] EmailDto model)
         {
             var user = await _usersUnitOfWork.GetUserAsync(model.Email);
             if (user == null)
@@ -165,7 +165,7 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPost("CreateUser")]
-        public async Task<IActionResult> CreateUser([FromBody] UserDTO model)
+        public async Task<IActionResult> CreateUser([FromBody] UserDto model)
         {
             User user = model;
             if (!string.IsNullOrEmpty(model.Photo))
@@ -192,7 +192,7 @@ namespace NgAir.BackEnd.Controllers
 
         [HttpPost("changePassword")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> ChangePasswordAsync(ChangePasswordDTO model)
+        public async Task<IActionResult> ChangePasswordAsync(ChangePasswordDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -216,7 +216,7 @@ namespace NgAir.BackEnd.Controllers
 
 
         [HttpPost("Login")]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginDTO model)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginDto model)
         {
             var result = await _usersUnitOfWork.LoginAsync(model);
             if (result.Succeeded)
@@ -254,7 +254,7 @@ namespace NgAir.BackEnd.Controllers
                 $"<b><a href ={tokenLink}>Confirmar Email</a></b>");
         }
 
-        private TokenDTO BuildToken(User user)
+        private TokenDto BuildToken(User user)
         {
             var claims = new List<Claim>
             {
@@ -278,7 +278,7 @@ namespace NgAir.BackEnd.Controllers
                 expires: expiration,
                 signingCredentials: credentials);
 
-            return new TokenDTO
+            return new TokenDto
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = expiration

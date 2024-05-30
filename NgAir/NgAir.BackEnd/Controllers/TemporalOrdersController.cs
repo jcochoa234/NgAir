@@ -53,9 +53,9 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPost("full")]
-        public async Task<IActionResult> PostAsync(TemporalOrderDTO temporalOrderDTO)
+        public async Task<IActionResult> PostAsync(TemporalOrderDto temporalOrderDto)
         {
-            var action = await _temporalOrdersUnitOfWork.AddFullAsync(User.Identity!.Name!, temporalOrderDTO);
+            var action = await _temporalOrdersUnitOfWork.AddFullAsync(User.Identity!.Name!, temporalOrderDto);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
@@ -64,9 +64,9 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPut("full")]
-        public async Task<IActionResult> PutFullAsync(TemporalOrderDTO temporalOrderDTO)
+        public async Task<IActionResult> PutFullAsync(TemporalOrderDto temporalOrderDto)
         {
-            var action = await _temporalOrdersUnitOfWork.PutFullAsync(temporalOrderDTO);
+            var action = await _temporalOrdersUnitOfWork.PutFullAsync(temporalOrderDto);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);

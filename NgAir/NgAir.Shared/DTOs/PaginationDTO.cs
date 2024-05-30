@@ -1,17 +1,10 @@
 ﻿namespace NgAir.Shared.DTOs
 {
-    public class PaginationDTO
+    public class PaginationDto
     {
-        public int Id { get; set; }
-
         public int PageNumber { get; set; } = 1;
 
         public int PageSize { get; set; } = 10;
 
-        public string? Filter { get; set; }
-
-        public string? SortField { get; set; }
-
-        public string? SortOrder { get; set; }
     }
 }

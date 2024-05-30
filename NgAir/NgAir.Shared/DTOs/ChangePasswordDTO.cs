@@ -2,7 +2,7 @@
 
 namespace NgAir.Shared.DTOs
 {
-    public class ChangePasswordDTO
+    public class ChangePasswordDto
     {
         [DataType(DataType.Password)]
         [Display(Name = "Current Password")]

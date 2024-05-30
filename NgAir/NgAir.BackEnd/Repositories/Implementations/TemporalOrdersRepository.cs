@@ -7,23 +7,17 @@ using NgAir.Shared.Responses;
 
 namespace NgAir.BackEnd.Repositories.Implementations
 {
-    public class TemporalOrdersRepository : GenericRepository<TemporalOrder>, ITemporalOrdersRepository
+    public class TemporalOrdersRepository(DataContext context, IUsersRepository usersRepository) : GenericRepository<TemporalOrder>(context), ITemporalOrdersRepository
     {
-        private readonly DataContext _context;
-        private readonly IUsersRepository _usersRepository;
+        private readonly DataContext _context = context;
+        private readonly IUsersRepository _usersRepository = usersRepository;
 
-        public TemporalOrdersRepository(DataContext context, IUsersRepository usersRepository) : base(context)
+        public async Task<ActionResponse<TemporalOrderDto>> AddFullAsync(string email, TemporalOrderDto temporalOrderDto)
         {
-            _context = context;
-            _usersRepository = usersRepository;
-        }
-
-        public async Task<ActionResponse<TemporalOrderDTO>> AddFullAsync(string email, TemporalOrderDTO temporalOrderDTO)
-        {
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == temporalOrderDTO.ProductId);
+            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == temporalOrderDto.ProductId);
             if (product == null)
             {
-                return new ActionResponse<TemporalOrderDTO>
+                return new ActionResponse<TemporalOrderDto>
                 {
                     WasSuccess = false,
                     Message = "Producto no existe"
@@ -33,7 +27,7 @@ namespace NgAir.BackEnd.Repositories.Implementations
             var user = await _usersRepository.GetUserAsync(email);
             if (user == null)
             {
-                return new ActionResponse<TemporalOrderDTO>
+                return new ActionResponse<TemporalOrderDto>
                 {
                     WasSuccess = false,
                     Message = "Usuario no existe"
@@ -43,8 +37,8 @@ namespace NgAir.BackEnd.Repositories.Implementations
             var temporalOrder = new TemporalOrder
             {
                 Product = product,
-                Quantity = temporalOrderDTO.Quantity,
-                Remarks = temporalOrderDTO.Remarks,
+                Quantity = temporalOrderDto.Quantity,
+                Remarks = temporalOrderDto.Remarks,
                 User = user
             };
 
@@ -52,15 +46,15 @@ namespace NgAir.BackEnd.Repositories.Implementations
             {
                 _context.Add(temporalOrder);
                 await _context.SaveChangesAsync();
-                return new ActionResponse<TemporalOrderDTO>
+                return new ActionResponse<TemporalOrderDto>
                 {
                     WasSuccess = true,
-                    Result = temporalOrderDTO
+                    Result = temporalOrderDto
                 };
             }
             catch (Exception ex)
             {
-                return new ActionResponse<TemporalOrderDTO>
+                return new ActionResponse<TemporalOrderDto>
                 {
                     WasSuccess = false,
                     Message = ex.Message
@@ -100,9 +94,9 @@ namespace NgAir.BackEnd.Repositories.Implementations
             };
         }
 
-        public async Task<ActionResponse<TemporalOrder>> PutFullAsync(TemporalOrderDTO temporalOrderDTO)
+        public async Task<ActionResponse<TemporalOrder>> PutFullAsync(TemporalOrderDto temporalOrderDto)
         {
-            var currentTemporalOrder = await _context.TemporalOrders.FirstOrDefaultAsync(x => x.Id == temporalOrderDTO.Id);
+            var currentTemporalOrder = await _context.TemporalOrders.FirstOrDefaultAsync(x => x.Id == temporalOrderDto.Id);
             if (currentTemporalOrder == null)
             {
                 return new ActionResponse<TemporalOrder>
@@ -112,8 +106,8 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 };
             }
 
-            currentTemporalOrder!.Remarks = temporalOrderDTO.Remarks;
-            currentTemporalOrder.Quantity = temporalOrderDTO.Quantity;
+            currentTemporalOrder!.Remarks = temporalOrderDto.Remarks;
+            currentTemporalOrder.Quantity = temporalOrderDto.Quantity;
 
             _context.Update(currentTemporalOrder);
             await _context.SaveChangesAsync();

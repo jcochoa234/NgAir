@@ -2,7 +2,7 @@
 
 namespace NgAir.Shared.DTOs
 {
-    public class ResetPasswordDTO
+    public class ResetPasswordDto
     {
         [Display(Name = "Email")]
         [EmailAddress(ErrorMessage = "You must enter a valid email address.")]

@@ -7,20 +7,12 @@ using NgAir.Shared.Entities;
 
 namespace NgAir.BackEnd.Repositories.Implementations
 {
-    public class UsersRepository : IUsersRepository
+    public class UsersRepository(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager) : IUsersRepository
     {
-        private readonly DataContext _context;
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly SignInManager<User> _signInManager;
-
-        public UsersRepository(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager)
-        {
-            _context = context;
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _signInManager = signInManager;
-        }
+        private readonly DataContext _context = context;
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly RoleManager<IdentityRole> _roleManager = roleManager;
+        private readonly SignInManager<User> _signInManager = signInManager;
 
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
@@ -89,7 +81,7 @@ namespace NgAir.BackEnd.Repositories.Implementations
             return await _userManager.IsInRoleAsync(user, roleName);
         }
 
-        public async Task<SignInResult> LoginAsync(LoginDTO model)
+        public async Task<SignInResult> LoginAsync(LoginDto model)
         {
             return await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
         }

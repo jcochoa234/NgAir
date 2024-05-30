@@ -10,7 +10,7 @@ namespace NgAir.FrontEnd.Pages.Auth
 {
     public partial class Register
     {
-        private UserDTO userDTO = new();
+        private UserDto userDto = new();
         private List<Country>? countries;
         private List<State>? states;
         private List<City>? cities;
@@ -29,7 +29,7 @@ namespace NgAir.FrontEnd.Pages.Auth
 
         private void ImageSelected(string imagenBase64)
         {
-            userDTO.Photo = imagenBase64;
+            userDto.Photo = imagenBase64;
             imageUrl = null;
         }
 
@@ -52,7 +52,7 @@ namespace NgAir.FrontEnd.Pages.Auth
             var selectedCountry = Convert.ToInt32(e.Value!);
             states = null;
             cities = null;
-            userDTO.CityId = 0;
+            userDto.CityId = 0;
             await LoadStatesAsyn(selectedCountry);
         }
 
@@ -73,7 +73,7 @@ namespace NgAir.FrontEnd.Pages.Auth
         {
             var selectedState = Convert.ToInt32(e.Value!);
             cities = null;
-            userDTO.CityId = 0;
+            userDto.CityId = 0;
             await LoadCitiesAsyn(selectedState);
         }
 
@@ -93,10 +93,10 @@ namespace NgAir.FrontEnd.Pages.Auth
 
         private async Task CreteUserAsync()
         {
-            userDTO.UserName = userDTO.Email;
-            userDTO.UserType = UserType.User;
+            userDto.UserName = userDto.Email;
+            userDto.UserType = UserType.User;
             loading = true;
-            var responseHttp = await Repository.PostAsync<UserDTO>("/api/accounts/CreateUser", userDTO);
+            var responseHttp = await Repository.PostAsync<UserDto>("/api/accounts/CreateUser", userDto);
             loading = false;
 
             if (responseHttp.Error)

@@ -23,11 +23,11 @@ namespace NgAir.BackEnd.UnitsOfWork.Implementations
 
         public virtual async Task<ActionResponse<T>> GetAsync(int id) => await _repository.GetAsync(id);
 
-        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(PaginationDTO pagination) => await _repository.GetAsync(pagination);
+        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(RequestParams requestParams) => await _repository.GetAsync(requestParams);
 
-        public async Task<ActionResponse<PagingResponse<T>>> GetPagedAsync(PaginationDTO pagination) => await _repository.GetPagedAsync(pagination);
+        public async Task<ActionResponse<PagingResponse<T>>> GetPagedAsync(RequestParams requestParams) => await _repository.GetPagedAsync(requestParams);
 
-        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination) => await _repository.GetTotalPagesAsync(pagination);
+        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams) => await _repository.GetTotalPagesAsync(requestParams);
 
         public virtual async Task<ActionResponse<T>> UpdateAsync(T model) => await _repository.UpdateAsync(model);
 

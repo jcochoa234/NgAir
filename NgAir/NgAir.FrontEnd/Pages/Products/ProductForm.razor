@@ -17,29 +17,29 @@
                     <div class="mb-3">
                         <label>Name:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@ProductDTO.Name" />
-                            <ValidationMessage For="@(() => ProductDTO.Name)" />
+                            <InputText class="form-control" @bind-Value="@ProductDto.Name" />
+                            <ValidationMessage For="@(() => ProductDto.Name)" />
                         </div>
                     </div>
                     <div class="mb-3">
                         <label>Description:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@ProductDTO.Description" />
-                            <ValidationMessage For="@(() => ProductDTO.Description)" />
+                            <InputText class="form-control" @bind-Value="@ProductDto.Description" />
+                            <ValidationMessage For="@(() => ProductDto.Description)" />
                         </div>
                     </div>
                     <div class="mb-3">
                         <label>Price:</label>
                         <div>
-                            <AntDesign.InputNumber class="form-control" @bind-Value="@ProductDTO.Price" />
-                            <ValidationMessage For="@(() => ProductDTO.Price)" />
+                            <AntDesign.InputNumber class="form-control" @bind-Value="@ProductDto.Price" />
+                            <ValidationMessage For="@(() => ProductDto.Price)" />
                         </div>
                     </div>
                     <div class="mb-3">
                         <label>Stock:</label>
                         <div>
-                            <AntDesign.InputNumber class="form-control" @bind-Value="@ProductDTO.Stock" />
-                            <ValidationMessage For="@(() => ProductDTO.Stock)" />
+                            <AntDesign.InputNumber class="form-control" @bind-Value="@ProductDto.Stock" />
+                            <ValidationMessage For="@(() => ProductDto.Stock)" />
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
     </div>
 </EditForm>
 
-@if (IsEdit && ProductDTO.ProductImages is not null)
+@if (IsEdit && ProductDto.ProductImages is not null)
 {
-    <CarouselView Images="ProductDTO.ProductImages" />
+    <CarouselView Images="ProductDto.ProductImages" />
 }

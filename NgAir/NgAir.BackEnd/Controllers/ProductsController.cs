@@ -44,9 +44,9 @@ namespace NgAir.BackEnd.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+        public override async Task<IActionResult> GetAsync([FromQuery] RequestParams requestParams)
         {
-            var response = await _productsUnitOfWork.GetAsync(pagination);
+            var response = await _productsUnitOfWork.GetAsync(requestParams);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -56,9 +56,9 @@ namespace NgAir.BackEnd.Controllers
 
         [AllowAnonymous]
         [HttpGet("totalPages")]
-        public override async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
+        public override async Task<IActionResult> GetPagesAsync([FromQuery] RequestParams requestParams)
         {
-            var action = await _productsUnitOfWork.GetTotalPagesAsync(pagination);
+            var action = await _productsUnitOfWork.GetTotalPagesAsync(requestParams);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
@@ -67,9 +67,9 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPost("addImages")]
-        public async Task<IActionResult> PostAddImagesAsync(ImageDTO imageDTO)
+        public async Task<IActionResult> PostAddImagesAsync(ImageDto imageDto)
         {
-            var action = await _productsUnitOfWork.AddImageAsync(imageDTO);
+            var action = await _productsUnitOfWork.AddImageAsync(imageDto);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
@@ -78,9 +78,9 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPost("full")]
-        public async Task<IActionResult> PostFullAsync(ProductDTO productDTO)
+        public async Task<IActionResult> PostFullAsync(ProductDto productDto)
         {
-            var action = await _productsUnitOfWork.AddFullAsync(productDTO);
+            var action = await _productsUnitOfWork.AddFullAsync(productDto);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
@@ -89,9 +89,9 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPost("removeLastImage")]
-        public async Task<IActionResult> PostRemoveLastImageAsync(ImageDTO imageDTO)
+        public async Task<IActionResult> PostRemoveLastImageAsync(ImageDto imageDto)
         {
-            var action = await _productsUnitOfWork.RemoveLastImageAsync(imageDTO);
+            var action = await _productsUnitOfWork.RemoveLastImageAsync(imageDto);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);
@@ -100,9 +100,9 @@ namespace NgAir.BackEnd.Controllers
         }
 
         [HttpPut("full")]
-        public async Task<IActionResult> PutFullAsync(ProductDTO productDTO)
+        public async Task<IActionResult> PutFullAsync(ProductDto productDto)
         {
-            var action = await _productsUnitOfWork.UpdateFullAsync(productDTO);
+            var action = await _productsUnitOfWork.UpdateFullAsync(productDto);
             if (action.WasSuccess)
             {
                 return Ok(action.Result);

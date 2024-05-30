@@ -16,23 +16,23 @@ namespace NgAir.BackEnd.UnitsOfWork.Implementations
             _productsRepository = productsRepository;
         }
 
-        public async Task<ActionResponse<Product>> AddFullAsync(ProductDTO productDTO) => await _productsRepository.AddFullAsync(productDTO);
+        public async Task<ActionResponse<Product>> AddFullAsync(ProductDto productDto) => await _productsRepository.AddFullAsync(productDto);
 
-        public async Task<ActionResponse<ImageDTO>> AddImageAsync(ImageDTO imageDTO) => await _productsRepository.AddImageAsync(imageDTO);
+        public async Task<ActionResponse<ImageDto>> AddImageAsync(ImageDto imageDto) => await _productsRepository.AddImageAsync(imageDto);
 
         public override async Task<ActionResponse<Product>> DeleteAsync(int id) => await _productsRepository.DeleteAsync(id);
 
         public override async Task<ActionResponse<Product>> GetAsync(int id) => await _productsRepository.GetAsync(id);
 
-        public override async Task<ActionResponse<IEnumerable<Product>>> GetAsync(PaginationDTO pagination) => await _productsRepository.GetAsync(pagination);
+        public override async Task<ActionResponse<IEnumerable<Product>>> GetAsync(RequestParams requestParams) => await _productsRepository.GetAsync(requestParams);
 
-        public async Task<ActionResponse<PagingResponse<Product>>> GetPagedAsync(PaginationDTO pagination) => await _productsRepository.GetPagedAsync(pagination);
+        public async Task<ActionResponse<PagingResponse<Product>>> GetPagedAsync(RequestParams requestParams) => await _productsRepository.GetPagedAsync(requestParams);
 
-        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination) => await _productsRepository.GetTotalPagesAsync(pagination);
+        public override async Task<ActionResponse<int>> GetTotalPagesAsync(RequestParams requestParams) => await _productsRepository.GetTotalPagesAsync(requestParams);
 
-        public async Task<ActionResponse<ImageDTO>> RemoveLastImageAsync(ImageDTO imageDTO) => await _productsRepository.RemoveLastImageAsync(imageDTO);
+        public async Task<ActionResponse<ImageDto>> RemoveLastImageAsync(ImageDto imageDto) => await _productsRepository.RemoveLastImageAsync(imageDto);
 
-        public async Task<ActionResponse<Product>> UpdateFullAsync(ProductDTO productDTO) => await _productsRepository.UpdateFullAsync(productDTO);
+        public async Task<ActionResponse<Product>> UpdateFullAsync(ProductDto productDto) => await _productsRepository.UpdateFullAsync(productDto);
 
     }
 }
