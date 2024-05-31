@@ -39,7 +39,6 @@ namespace NgAir.Shared.Entities
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime RegisterDate { get; set; }
 
-
         public int XeroContainerLineId { get; set; }
 
         public XeroContainerLine? XeroContainerLine { get; set; }

@@ -18,6 +18,13 @@ namespace NgAir.BackEnd.Data
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<TemporalOrder> TemporalOrders { get; set; }
+        public DbSet<XeroInvoiceHeader> XeroInvoiceHeaders { get; set; }
+        public DbSet<XeroInvoiceLine> XeroInvoiceLines { get; set; }
+        public DbSet<XeroInvoiceLineSerie> XeroInvoiceLineSeries { get; set; }
+        public DbSet<XeroContainerHeader> XeroContainerHeaders { get; set; }
+        public DbSet<XeroContainerLine> XeroContainerLines { get; set; }
+        public DbSet<XeroContainerLineSerie> XeroContainerLineSeries { get; set; }
+        public DbSet<XeroContact> XeroContacts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
