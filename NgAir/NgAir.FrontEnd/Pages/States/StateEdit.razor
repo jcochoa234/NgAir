@@ -1,6 +1,5 @@
 ﻿@page "/states/edit/{StateId:int}"
-
-<h3>Editar Estado/Departamento</h3>
+@inherits FeedbackComponent<int>
 
 @if (state is null)
 {
@@ -8,5 +7,5 @@
 }
 else
 {
-    <FormWithName @ref="stateForm" Label="Estado/Departamento:" Model="state" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <FormWithName @ref="stateForm" Label="Estado/Departamento:" Model="state" OnValidSubmit="SaveAsync" />
 }

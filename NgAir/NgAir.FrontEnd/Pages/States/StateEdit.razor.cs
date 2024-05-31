@@ -23,7 +23,13 @@ namespace NgAir.FrontEnd.Pages.States
 
         [Parameter] public int StateId { get; set; }
 
-        protected override async Task OnParametersSetAsync()
+        protected override async Task OnInitializedAsync()
+        {
+            StateId = Options;
+            await LoadAsync();
+        }
+
+        private async Task LoadAsync()
         {
             var responseHttp = await Repository.GetAsync<State>($"/api/states/{StateId}");
             if (responseHttp.Error)

@@ -34,14 +34,13 @@ namespace NgAir.FrontEnd.Shared
             var options = new ConfirmOptions
             {
                 Title = "Confirmation",
-                OkText = "Delete",
+                OkText = "Yes",
                 Content = "Do you wish to leave the page and lose the changes?",
                 Centered = true,
                 Button1Props =
                 {
-                    Danger = true,
                     Shape = ButtonShape.Round,
-                    Icon = "delete",
+                    Icon = "check",
                 },
                 Button2Props =
                 {

@@ -102,8 +102,10 @@ namespace NgAir.BackEnd.Repositories.Implementations
                 filters = customFilter;
             }
 
-            var queryable = _context.States.AsQueryable().FilterDynamic(filters!);
-
+            var queryable = _context.States
+                .Include(x => x.Cities)
+                .AsQueryable()
+                .FilterDynamic(filters!);
 
             var page = PagedList<State>.ToPagedList(queryable.OrderByDynamic(requestParams), requestParams);
 

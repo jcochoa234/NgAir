@@ -8,39 +8,6 @@
         </span>
     </div>
     <div class="card-body">
-@*         <Filter PlaceHolder="Search country..." Callback=@FilterCallBack />
-        <GenericList MyList="Countries">
-            <Body>
-                <NgAir.FrontEnd.Pages.Auth.ChangePassword Pagination CurrentPage="currentPage"
-                            TotalPages="totalPages"
-                            SelectedPageNumber="SelectedPageNumberAsync"
-                            PageSize="SelectedPageSizeAsync" />
-
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Country</th>
-                            <th style="width:210px">State</th>
-                            <th style="width:168px"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var country in Countries!)
-                        {
-                            <tr>
-                                <td><a href="/countries/details/@country.Id"> @country.Name</a></td>
-                                <td>@country.StatesNumber</td>
-                                <td>
-                                    <a @onclick=@(() => ShowModalAsync(country.Id, true)) class="btn btn-sm btn-warning"><i class="bi bi-pencil" /> Edit</a>
-                                    <button @onclick=@(() => DeleteAsycn(country)) class="btn btn-sm btn-danger"><i class="bi bi-trash" /> Remove</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </Body>
-        </GenericList> *@
-
         <Table TItem="Country"
                DataSource="Countries"
                Loading="Loading"

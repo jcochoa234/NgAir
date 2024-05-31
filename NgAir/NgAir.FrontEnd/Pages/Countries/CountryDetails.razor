@@ -10,44 +10,42 @@ else
         <div class="card-header">
             <span>
                 <i class="bi bi-globe-americas" /> @country.Name
-                <a class="btn btn-sm btn-primary float-end mx-1" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-square" />  Create State</a>
-                <a class="btn btn-sm btn-success float-end" href="/countries"><i class="bi bi-arrow-left" />  Return</a>
+                <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModal()">Add State</Button>&nbsp;&nbsp;&nbsp;
+                <a href="/countries" style="padding-right:20px;">
+                    <Button Type="primary" Icon="@IconType.Outline.ArrowLeft" Class="float-end" >Return</Button>
+                </a>
             </span>
         </div>
         <div class="card-body">
-            <Filter PlaceHolder="Search State..." Callback=@FilterCallBack />
-            <GenericList MyList="states!">
-                <Body>
-                    <NgAir.FrontEnd.Shared.Pagination CurrentPage="currentPage"
-                                TotalPages="totalPages"
-                                SelectedPageNumber="SelectedPageNumberAsync"
-                                PageSize="SelectedPageSizeAsync" />
-
-
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>State</th>
-                                <th style="width:90px">Cities</th>
-                                <th style="width:168px"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var state in states!)
-                            {
-                                <tr>
-                                    <td><a href="/states/details/@state.Id">@state.Name</a></td>
-                                    <td>@state.CitiesNumber</td>
-                                    <td>
-                                        <a class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(state.Id, true))><i class="bi bi-pencil" /> Edit</a>
-                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(state))><i class="bi bi-trash" /> Remove</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </Body>
-            </GenericList>
+            <Table TItem="State"
+                   DataSource="States"
+                   Loading="Loading"
+                   Total="Total"
+                   OnChange="HandleTableChange"
+                   RemoteDataSource RowKey="x=>x.Id" @bind-SelectedRows="_items">
+                <ChildContent>
+                    <Selection />
+                    <AntDesign.PropertyColumn Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending">
+                        <a href="/countries/details/@context.Id">@context.Name</a>
+                    </AntDesign.PropertyColumn>
+                    <AntDesign.PropertyColumn Property="c=>c.CitiesNumber">
+                        @context.CitiesNumber
+                    </AntDesign.PropertyColumn>
+                    <ActionColumn Title="Action">
+                        <Space>
+                            <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Edit" OnClick="()=>ShowModal(context.Id, true)">Edit</Button></SpaceItem>
+                            <SpaceItem><Button Danger Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
+                        </Space>
+                    </ActionColumn>
+                </ChildContent>
+                <PaginationTemplate>
+                    <AntDesign.Pagination Total="Total"
+                        PageSize="context.PageSize"
+                        Current="context.PageIndex"
+                        ShowSizeChanger
+                        OnChange="context.HandlePageChange" />
+                </PaginationTemplate>
+            </Table>
         </div>
     </div>
 }

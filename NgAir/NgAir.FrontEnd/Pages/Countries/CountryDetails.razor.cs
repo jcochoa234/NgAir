@@ -1,9 +1,10 @@
-using Blazored.Modal;
+using AntDesign;
+using AntDesign.TableModels;
 using Blazored.Modal.Services;
-using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Pages.States;
+using NgAir.FrontEnd.Paging;
 using NgAir.FrontEnd.Repositories;
 using NgAir.Shared.Entities;
 using System.Net;
@@ -13,137 +14,29 @@ namespace NgAir.FrontEnd.Pages.Countries
     [Authorize(Roles = "Admin")]
     public partial class CountryDetails
     {
-        private Country? country;
-        private List<State>? states;
-        private int currentPage = 1;
-        private int totalPages;
 
-        [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
         [Inject] private IRepository Repository { get; set; } = null!;
-
+        [Inject] private AntDesign.ModalService ModalService { get; set; } = null!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Parameter] public int CountryId { get; set; }
-        [Parameter, SupplyParameterFromQuery] public string PageNumber { get; set; } = string.Empty;
-        [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
-        [Parameter, SupplyParameterFromQuery] public int PageSize { get; set; } = 10;
-        [CascadingParameter] IModalService Modal { get; set; } = default!;
+
+        private Country? country;
+        public List<State>? States { get; set; }
+
+        private bool Loading = false;
+
+        private int Total;
+
+        private IEnumerable<State>? _items;
 
         protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
         }
 
-        private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+        private async Task LoadAsync()
         {
-            IModalReference modalReference;
-
-            if (isEdit)
-            {
-                modalReference = Modal.Show<StateEdit>(string.Empty, new ModalParameters().Add("StateId", id));
-            }
-            else
-            {
-                modalReference = Modal.Show<StateCreate>(string.Empty, new ModalParameters().Add("CountryId", CountryId));
-            }
-
-            var result = await modalReference.Result;
-            if (result.Confirmed)
-            {
-                await LoadAsync();
-            }
-        }
-
-        private async Task SelectedPageSizeAsync(int pageSize)
-        {
-            PageSize = pageSize;
-            int pageNumber = 1;
-            await LoadAsync(pageNumber);
-            await SelectedPageNumberAsync(pageNumber);
-        }
-
-        private async Task FilterCallBack(string filter)
-        {
-            Filter = filter;
-            await ApplyFilterAsync();
-            StateHasChanged();
-        }
-
-        private async Task SelectedPageNumberAsync(int pageNumber)
-        {
-            if (!string.IsNullOrWhiteSpace(PageNumber))
-            {
-                pageNumber = Convert.ToInt32(PageNumber);
-            }
-
-            currentPage = pageNumber;
-            await LoadAsync(pageNumber);
-        }
-
-        private async Task LoadAsync(int pageNumber = 1)
-        {
-            var ok = await LoadCountryAsync();
-            if (ok)
-            {
-                ok = await LoadStatesAsync(pageNumber);
-                if (ok)
-                {
-                    await LoadPagesAsync();
-                }
-            }
-        }
-
-        private void ValidatePageSize()
-        {
-            if (PageSize == 0)
-            {
-                PageSize = 10;
-            }
-        }
-
-        private async Task LoadPagesAsync()
-        {
-            ValidatePageSize();
-            var url = $"api/states/totalPages?id={CountryId}&PageSize={PageSize}";
-            if (!string.IsNullOrEmpty(Filter))
-            {
-                url += $"&filter={Filter}";
-            }
-
-            var responseHttp = await Repository.GetAsync<int>(url);
-            if (responseHttp.Error)
-            {
-                var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-                return;
-            }
-            totalPages = responseHttp.Response;
-        }
-
-        private async Task<bool> LoadStatesAsync(int pageNumber)
-        {
-            ValidatePageSize();
-            var url = $"api/states?id={CountryId}&pageNumber={pageNumber}&PageSize={PageSize}";
-            if (!string.IsNullOrEmpty(Filter))
-            {
-                url += $"&filter={Filter}";
-            }
-
-            var responseHttp = await Repository.GetAsync<List<State>>(url);
-            if (responseHttp.Error)
-            {
-                var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-                return false;
-            }
-            states = responseHttp.Response;
-            return true;
-        }
-
-        private async Task ApplyFilterAsync()
-        {
-            int pageNumber = 1;
-            await LoadAsync(pageNumber);
-            await SelectedPageNumberAsync(pageNumber);
+            await LoadCountryAsync();
         }
 
         private async Task<bool> LoadCountryAsync()
@@ -158,51 +51,134 @@ namespace NgAir.FrontEnd.Pages.Countries
                 }
 
                 var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
                 return false;
             }
             country = responseHttp.Response;
             return true;
         }
 
-        private async Task DeleteAsync(State state)
+        private async Task HandleTableChange(QueryModel<State> queryModel)
         {
-            var result = await SweetAlertService.FireAsync(new SweetAlertOptions
-            {
-                Title = "Confirmation",
-                Text = $"Do you really want to eliminate the state {state.Name} ?",
-                Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true,
-                CancelButtonText = "No",
-                ConfirmButtonText = "Si"
-            });
+            Loading = true;
 
-            var confirm = string.IsNullOrEmpty(result.Value);
-            if (confirm)
-            {
-                return;
-            }
+            var url = $"api/states/paged?" + GetRandomuserParams(queryModel);
 
-            var responseHttp = await Repository.DeleteAsync<State>($"/api/states/{state.Id}");
+            var responseHttp = await Repository.GetAsync<PagingResponse<State>>(url);
             if (responseHttp.Error)
             {
-                if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
+                var message = await responseHttp.GetErrorMessageAsync();
+                await ModalService.ErrorAsync(new ConfirmOptions
                 {
-                    var message = await responseHttp.GetErrorMessageAsync();
-                    await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-                    return;
-                }
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
             }
 
-            await LoadAsync();
-            var toast = SweetAlertService.Mixin(new SweetAlertOptions
-            {
-                Toast = true,
-                Position = SweetAlertPosition.BottomEnd,
-                ShowConfirmButton = true,
-                Timer = 3000
-            });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Record successfully deleted.");
+            States = responseHttp.Response?.Items.ToList();
+            Loading = false;
+            Total = (int)(responseHttp.Response?.Total!);
         }
+
+        private static string GetRandomuserParams(QueryModel<State> queryModel)
+        {
+            List<string> query =
+            [
+                $"pageSize={queryModel.PageSize}",
+                $"pageNumber={queryModel.PageIndex}",
+            ];
+
+            queryModel.SortModel.ForEach(x =>
+            {
+                query.Add($"sortField={x.FieldName.ToLower()}");
+                query.Add($"sortOrder={x.Sort}");
+            });
+
+            queryModel.FilterModel.ForEach(filter =>
+            {
+                filter.SelectedValues.ForEach(value =>
+                {
+                    query.Add($"{filter.FieldName.ToLower()}={value}");
+                });
+            });
+
+            return string.Join('&', query);
+        }
+
+        private void ShowModal(int id = 0, bool isEdit = false)
+        {
+            var modalConfig = new AntDesign.ModalOptions
+            {
+                Title = isEdit ? "Edit State" : "Create State",
+                Centered = true,
+                OkText = "Ok",
+                Width = 500,
+                Footer = null,
+            };
+
+            if (isEdit)
+            {
+                ModalService.CreateModal<StateEdit, int>(modalConfig, id);
+            }
+            else
+            {
+                ModalService.CreateModal<StateCreate, string>(modalConfig, "");
+            }
+        }
+
+        private async Task DeleteAsycn(State state)
+        {
+
+            var options = new ConfirmOptions
+            {
+                Title = "Confirmation",
+                OkText = "Delete",
+                Content = $"Are you sure you want to delete the state: {state.Name}?",
+                Centered = true,
+                Button1Props =
+                {
+                    Danger = true,
+                    Shape = ButtonShape.Round,
+                    Icon = "delete",
+                },
+                Button2Props =
+                {
+                    Shape = ButtonShape.Round,
+                    Icon = "close"
+                }
+            };
+
+            var result = await ModalService.ConfirmAsync(options);
+            if (result)
+            {
+                Loading = true;
+                var responseHttp = await Repository.DeleteAsync<State>($"api/states/{state.Id}");
+                if (responseHttp.Error)
+                {
+                    if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        NavigationManager.NavigateTo("/states");
+                    }
+                    else
+                    {
+                        Loading = false;
+                        var mensajeError = await responseHttp.GetErrorMessageAsync();
+                        await ModalService.ErrorAsync(new ConfirmOptions
+                        {
+                            Title = "Error",
+                            Content = mensajeError,
+                            OkText = "Close"
+                        });
+                    }
+                }
+            }
+        }
+
     }
 }
