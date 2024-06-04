@@ -27,6 +27,9 @@ namespace NgAir.FrontEnd.Pages.Categories
 
         private IEnumerable<Category>? _items;
 
+        private Table<Category> Table;
+        private QueryModel SavedQueryModel;
+
 
         private async Task HandleTableChange(QueryModel<Category> queryModel)
         {
@@ -85,7 +88,7 @@ namespace NgAir.FrontEnd.Pages.Categories
 
         private void ShowModal(int id = 0, bool isEdit = false)
         {
-            var modalConfig = new AntDesign.ModalOptions
+            var modalConfig = new ModalOptions
             {
                 Title = isEdit ? "Edit Category" : "Create Category",
                 Centered = true,
@@ -140,16 +143,33 @@ namespace NgAir.FrontEnd.Pages.Categories
                     else
                     {
                         Loading = false;
-                        var mensajeError = await responseHttp.GetErrorMessageAsync();
+                        var messageError = await responseHttp.GetErrorMessageAsync();
                         await ModalService.ErrorAsync(new ConfirmOptions
                         {
                             Title = "Error",
-                            Content = mensajeError,
+                            Content = messageError,
                             OkText = "Close"
                         });
                     }
                 }
+                else
+                {
+                    Loading = false;
+                    LoadTable();
+                    await ModalService.SuccessAsync(new ConfirmOptions
+                    {
+                        Title = "Success",
+                        Content = "Record successfully deleted.",
+                        OkText = "Close"
+                    });
+                }
             }
+        }
+
+        void LoadTable()
+        {
+            SavedQueryModel = Table.GetQueryModel();
+            Table.ReloadData(SavedQueryModel);
         }
 
     }

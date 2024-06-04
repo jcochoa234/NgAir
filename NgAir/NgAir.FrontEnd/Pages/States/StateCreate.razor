@@ -1,4 +1,4 @@
 ﻿@page "/states/create/{CountryId:int}"
-@inherits FeedbackComponent<string>
+@inherits FeedbackComponent<int>
 
-<FormWithName @ref="stateForm" Label="State:" Model="state" OnValidSubmit="CreateAsync" />
+<FormWithName @ref="stateForm" Label="State:" Model="State" OnValidSubmit="CreateAsync" />

@@ -10,7 +10,7 @@ else
         <div class="card-header">
             <span>
                 <i class="bi bi-globe-americas" /> @country.Name
-                <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModal()">Add State</Button>&nbsp;&nbsp;&nbsp;
+                <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModal(0, false, country.Id)">Add State</Button>&nbsp;&nbsp;&nbsp;
                 <a href="/countries" style="padding-right:20px;">
                     <Button Type="primary" Icon="@IconType.Outline.ArrowLeft" Class="float-end" >Return</Button>
                 </a>
@@ -26,14 +26,14 @@ else
                 <ChildContent>
                     <Selection />
                     <AntDesign.PropertyColumn Property="c=>c.Name" Sortable DefaultSortOrder="AntDesign.SortDirection.Ascending">
-                        <a href="/countries/details/@context.Id">@context.Name</a>
+                        <a href="/states/details/@context.Id">@context.Name</a>
                     </AntDesign.PropertyColumn>
                     <AntDesign.PropertyColumn Property="c=>c.CitiesNumber">
                         @context.CitiesNumber
                     </AntDesign.PropertyColumn>
                     <ActionColumn Title="Action">
                         <Space>
-                            <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Edit" OnClick="()=>ShowModal(context.Id, true)">Edit</Button></SpaceItem>
+                            <SpaceItem><Button Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Edit" OnClick="()=>ShowModal(context.Id, true, 0)">Edit</Button></SpaceItem>
                             <SpaceItem><Button Danger Type="@AntDesign.ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteAsycn(context)">Remove</Button></SpaceItem>
                         </Space>
                     </ActionColumn>

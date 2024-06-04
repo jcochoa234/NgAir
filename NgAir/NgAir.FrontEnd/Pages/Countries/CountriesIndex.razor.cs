@@ -1,6 +1,5 @@
 using AntDesign;
 using AntDesign.TableModels;
-using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Paging;
@@ -14,7 +13,7 @@ namespace NgAir.FrontEnd.Pages.Countries
     public partial class CountriesIndex
     {
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private AntDesign.ModalService ModalService { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
         public List<Country>? Countries { get; set; }
@@ -25,6 +24,8 @@ namespace NgAir.FrontEnd.Pages.Countries
 
         private IEnumerable<Country>? _items;
 
+        private Table<Country> Table;
+        private QueryModel SavedQueryModel;
 
         private async Task HandleTableChange(QueryModel<Country> queryModel)
         {
@@ -140,7 +141,24 @@ namespace NgAir.FrontEnd.Pages.Countries
                         });
                     }
                 }
+                else
+                {
+                    Loading = false;
+                    LoadTable();
+                    await ModalService.SuccessAsync(new ConfirmOptions
+                    {
+                        Title = "Success",
+                        Content = "Record successfully deleted.",
+                        OkText = "Close"
+                    });
+                }
             }
+        }
+
+        void LoadTable()
+        {
+            SavedQueryModel = Table.GetQueryModel();
+            Table.ReloadData(SavedQueryModel);
         }
 
     }

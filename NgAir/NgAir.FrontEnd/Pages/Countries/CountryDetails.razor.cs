@@ -111,9 +111,9 @@ namespace NgAir.FrontEnd.Pages.Countries
             return string.Join('&', query);
         }
 
-        private void ShowModal(int id = 0, bool isEdit = false)
+        private void ShowModal(int id = 0, bool isEdit = false, int countryId = 0)
         {
-            var modalConfig = new AntDesign.ModalOptions
+            var modalConfig = new ModalOptions
             {
                 Title = isEdit ? "Edit State" : "Create State",
                 Centered = true,
@@ -128,7 +128,7 @@ namespace NgAir.FrontEnd.Pages.Countries
             }
             else
             {
-                ModalService.CreateModal<StateCreate, string>(modalConfig, "");
+                ModalService.CreateModal<StateCreate, int>(modalConfig, countryId);
             }
         }
 

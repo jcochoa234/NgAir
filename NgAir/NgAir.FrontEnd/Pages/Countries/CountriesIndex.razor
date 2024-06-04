@@ -4,11 +4,12 @@
     <div class="card-header">
         <span>
             <i class="bi bi-globe-americas" /> Countries
-            <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModal()">Add Category</Button>
+            <Button Type="primary" Icon="@IconType.Outline.Plus" Class="float-end" OnClick="()=>ShowModal()">Add Country</Button>
         </span>
     </div>
     <div class="card-body">
         <Table TItem="Country"
+               @ref="Table"
                DataSource="Countries"
                Loading="Loading"
                Total="Total"

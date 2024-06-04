@@ -1,11 +1,11 @@
 ﻿@page "/states/edit/{StateId:int}"
 @inherits FeedbackComponent<int>
 
-@if (state is null)
+@if (State is null)
 {
     <Loading />
 }
 else
 {
-    <FormWithName @ref="stateForm" Label="Estado/Departamento:" Model="state" OnValidSubmit="SaveAsync" />
+    <FormWithName @ref="stateForm" Label="State:" Model="State" OnValidSubmit="SaveAsync" />
 }

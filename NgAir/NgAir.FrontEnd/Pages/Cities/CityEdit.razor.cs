@@ -1,6 +1,4 @@
-using Blazored.Modal;
-using Blazored.Modal.Services;
-using CurrieTechnologies.Razor.SweetAlert2;
+using AntDesign;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
@@ -13,17 +11,23 @@ namespace NgAir.FrontEnd.Pages.Cities
     [Authorize(Roles = "Admin")]
     public partial class CityEdit
     {
-        private City? city;
+        private City? City;
         private FormWithName<City>? cityForm;
 
-        [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
+        [Inject] private IMessageService Message { get; set; } = null!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
         [Parameter] public int CityId { get; set; }
-        [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-        protected override async Task OnParametersSetAsync()
+        protected override async Task OnInitializedAsync()
+        {
+            CityId = Options;
+            await LoadAsync();
+        }
+
+        private async Task LoadAsync()
         {
             var responseHttp = await Repository.GetAsync<City>($"/api/cities/{CityId}");
             if (responseHttp.Error)
@@ -33,39 +37,41 @@ namespace NgAir.FrontEnd.Pages.Cities
                     Return();
                 }
                 var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
                 return;
             }
-            city = responseHttp.Response;
+            City = responseHttp.Response;
         }
 
         private async Task SaveAsync()
         {
-            var response = await Repository.PutAsync($"/api/cities", city);
+            var response = await Repository.PutAsync($"/api/cities", City);
             if (response.Error)
             {
                 var message = await response.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
                 return;
             }
 
-            await BlazoredModal.CloseAsync(ModalResult.Ok());
             Return();
 
-            var toast = SweetAlertService.Mixin(new SweetAlertOptions
-            {
-                Toast = true,
-                Position = SweetAlertPosition.BottomEnd,
-                ShowConfirmButton = true,
-                Timer = 3000
-            });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Successfully saved changes.");
+            await Message.Success("Successfully saved changes.");
         }
 
         private void Return()
         {
             cityForm!.FormPostedSuccessfully = true;
-            NavigationManager.NavigateTo($"/states/details/{city!.StateId}");
+            NavigationManager.NavigateTo($"/states/details/{City!.StateId}");
         }
     }
 }

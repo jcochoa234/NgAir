@@ -1,7 +1,4 @@
 using AntDesign;
-using Blazored.Modal;
-using Blazored.Modal.Services;
-using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
@@ -14,11 +11,11 @@ namespace NgAir.FrontEnd.Pages.Categories
     [Authorize(Roles = "Admin")]
     public partial class CategoryEdit
     {
-        private Category? category;
+        private Category? Category;
         private FormWithName<Category>? categoryForm;
 
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private AntDesign.ModalService ModalService { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
@@ -43,24 +40,24 @@ namespace NgAir.FrontEnd.Pages.Categories
                 }
                 else
                 {
-                    var messsage = await responseHttp.GetErrorMessageAsync();
+                    var message = await responseHttp.GetErrorMessageAsync();
                     await ModalService.ErrorAsync(new ConfirmOptions
                     {
                         Title = "Error",
-                        Content = messsage,
+                        Content = message,
                         OkText = "Close"
                     });
                 }
             }
             else
             {
-                category = responseHttp.Response;
+                Category = responseHttp.Response;
             }
         }
 
         private async Task EditAsync()
         {
-            var responseHttp = await Repository.PutAsync("/api/categories", category);
+            var responseHttp = await Repository.PutAsync("/api/categories", Category);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();

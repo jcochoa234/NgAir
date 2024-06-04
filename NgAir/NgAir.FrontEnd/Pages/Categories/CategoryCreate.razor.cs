@@ -10,19 +10,19 @@ namespace NgAir.FrontEnd.Pages.Categories
     [Authorize(Roles = "Admin")]
     public partial class CategoryCreate
     {
-        private Category category = new();
+        private Category Category = new();
         private FormWithName<Category>? categoryForm;
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private AntDesign.ModalService _modalService { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
         private async Task CreateAsync()
         {
-            var responseHttp = await Repository.PostAsync("/api/categories", category);
+            var responseHttp = await Repository.PostAsync("/api/categories", Category);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
-                await _modalService.ErrorAsync(new ConfirmOptions
+                await ModalService.ErrorAsync(new ConfirmOptions
                 {
                     Title = "Error",
                     Content = message,
@@ -34,14 +34,14 @@ namespace NgAir.FrontEnd.Pages.Categories
 
             Return();
 
-            await _modalService.SuccessAsync(new ConfirmOptions
+            await ModalService.SuccessAsync(new ConfirmOptions
             {
                 Title = "Success",
                 Content = "Registration successfully created.",
-                OkText = "Close"
+                OkText = "Close",
             });
-        }
 
+        }
 
         private void Return()
         {

@@ -1,6 +1,5 @@
-using Blazored.Modal;
-using Blazored.Modal.Services;
-using CurrieTechnologies.Razor.SweetAlert2;
+
+using AntDesign;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
@@ -12,37 +11,40 @@ namespace NgAir.FrontEnd.Pages.Cities
     [Authorize(Roles = "Admin")]
     public partial class CityCreate
     {
-        private City city = new();
+        private City City = new();
         private FormWithName<City>? cityForm;
 
         [Inject] private IRepository Repository { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
+        [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
         [Parameter] public int StateId { get; set; }
-        [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+        protected override Task OnInitializedAsync()
+        {
+            StateId = Options;
+            return Task.CompletedTask;
+        }
 
         private async Task CreateAsync()
         {
-            city.StateId = StateId;
-            var responseHttp = await Repository.PostAsync("/api/cities", city);
+            City.StateId = StateId;
+            var responseHttp = await Repository.PostAsync("/api/cities", City);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
                 return;
             }
 
-            await BlazoredModal.CloseAsync(ModalResult.Ok());
             Return();
 
-            var toast = SweetAlertService.Mixin(new SweetAlertOptions
-            {
-                Toast = true,
-                Position = SweetAlertPosition.BottomEnd,
-                ShowConfirmButton = true,
-                Timer = 3000
-            });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registration successfully created.");
+            await Message.Success("Successfully saved changes.");
         }
 
         private void Return()

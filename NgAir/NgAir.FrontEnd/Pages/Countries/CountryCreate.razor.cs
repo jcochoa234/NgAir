@@ -1,6 +1,4 @@
-using Blazored.Modal;
-using Blazored.Modal.Services;
-using CurrieTechnologies.Razor.SweetAlert2;
+using AntDesign;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
@@ -15,9 +13,8 @@ namespace NgAir.FrontEnd.Pages.Countries
         private Country country = new();
         private FormWithName<Country>? countryForm;
         [Inject] private IRepository Repository { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-        [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
         private async Task CreateAsync()
         {
@@ -25,21 +22,23 @@ namespace NgAir.FrontEnd.Pages.Countries
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
                 return;
             }
 
-            await BlazoredModal.CloseAsync(ModalResult.Ok());
             Return();
 
-            var toast = SweetAlertService.Mixin(new SweetAlertOptions
+            await ModalService.SuccessAsync(new ConfirmOptions
             {
-                Toast = true,
-                Position = SweetAlertPosition.BottomEnd,
-                ShowConfirmButton = true,
-                Timer = 3000
+                Title = "Success",
+                Content = "Registration successfully created.",
+                OkText = "Close",
             });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registration successfully created.");
         }
 
         private void Return()

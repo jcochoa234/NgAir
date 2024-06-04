@@ -1,12 +1,11 @@
 ﻿@page "/cities/edit/{CityId:int}"
+@inherits FeedbackComponent<int>
 
-<h3>Edit City</h3>
-
-@if (city is null)
+@if (City is null)
 {
     <Loading />
 }
 else
 {
-    <FormWithName @ref="cityForm" Label="City:" Model="city" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <FormWithName @ref="cityForm" Label="City:" Model="City" OnValidSubmit="SaveAsync" />
 }

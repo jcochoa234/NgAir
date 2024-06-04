@@ -1,6 +1,4 @@
-using Blazored.Modal;
-using Blazored.Modal.Services;
-using CurrieTechnologies.Razor.SweetAlert2;
+using AntDesign;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using NgAir.FrontEnd.Repositories;
@@ -13,13 +11,13 @@ namespace NgAir.FrontEnd.Pages.States
     [Authorize(Roles = "Admin")]
     public partial class StateEdit
     {
-        private State? state;
+        private State? State;
         private FormWithName<State>? stateForm;
 
         [Inject] private IRepository Repository { get; set; } = null!;
+        [Inject] private ModalService ModalService { get; set; } = null!;
+        [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
-        [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
         [Parameter] public int StateId { get; set; }
 
@@ -39,39 +37,41 @@ namespace NgAir.FrontEnd.Pages.States
                     Return();
                 }
                 var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
                 return;
             }
-            state = responseHttp.Response;
+            State = responseHttp.Response;
         }
 
         private async Task SaveAsync()
         {
-            var responseHttp = await Repository.PutAsync($"/api/states", state);
+            var responseHttp = await Repository.PutAsync($"/api/states", State);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
-                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await ModalService.ErrorAsync(new ConfirmOptions
+                {
+                    Title = "Error",
+                    Content = message,
+                    OkText = "Close"
+                });
                 return;
             }
 
-            await BlazoredModal.CloseAsync(ModalResult.Ok());
             Return();
 
-            var toast = SweetAlertService.Mixin(new SweetAlertOptions
-            {
-                Toast = true,
-                Position = SweetAlertPosition.BottomEnd,
-                ShowConfirmButton = true,
-                Timer = 3000
-            });
-            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Cambios guardados con éxito.");
+            await Message.Success("Successfully saved changes.");
         }
 
         private void Return()
         {
             stateForm!.FormPostedSuccessfully = true;
-            NavigationManager.NavigateTo($"/countries/details/{state!.CountryId}");
+            NavigationManager.NavigateTo($"/countries/details/{State!.CountryId}");
         }
     }
 }
