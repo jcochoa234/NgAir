@@ -22,8 +22,8 @@ namespace NgAir.BackEnd.Data
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
-            //await CheckCountriesFullAsync();
-            await CheckCountriesAsync();
+            await CheckCountriesFullAsync();
+            ///await CheckCountriesAsync();
             await CheckCatregoriesAsync();
             await CheckRolesAsync();
             await CheckProductsAsync();

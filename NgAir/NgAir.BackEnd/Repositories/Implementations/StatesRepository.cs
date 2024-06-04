@@ -104,6 +104,7 @@ namespace NgAir.BackEnd.Repositories.Implementations
 
             var queryable = _context.States
                 .Include(x => x.Cities)
+                .Where(x => x.Country!.Id == requestParams.Id)
                 .AsQueryable()
                 .FilterDynamic(filters!);
 
