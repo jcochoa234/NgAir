@@ -71,7 +71,7 @@ namespace NgAir.FrontEnd.Pages.States
         {
             Loading = true;
 
-            var url = $"api/cities/paged?" + GetRandomuserParams(queryModel);
+            var url = $"api/cities/paged?Id={StateId}&" + GetRandomuserParams(queryModel);
 
             var responseHttp = await Repository.GetAsync<PagingResponse<City>>(url);
             if (responseHttp.Error)

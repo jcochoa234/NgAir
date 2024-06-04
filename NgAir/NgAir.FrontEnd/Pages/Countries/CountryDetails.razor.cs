@@ -29,6 +29,10 @@ namespace NgAir.FrontEnd.Pages.Countries
 
         private IEnumerable<State>? _items;
 
+        private Table<State> Table;
+        private QueryModel SavedQueryModel;
+
+
         protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
@@ -67,7 +71,7 @@ namespace NgAir.FrontEnd.Pages.Countries
         {
             Loading = true;
 
-            var url = $"api/states/paged?" + GetRandomuserParams(queryModel);
+            var url = $"api/states/paged?Id={CountryId}&" + GetRandomuserParams(queryModel);
 
             var responseHttp = await Repository.GetAsync<PagingResponse<State>>(url);
             if (responseHttp.Error)
@@ -177,7 +181,24 @@ namespace NgAir.FrontEnd.Pages.Countries
                         });
                     }
                 }
+                else
+                {
+                    Loading = false;
+                    LoadTable();
+                    await ModalService.SuccessAsync(new ConfirmOptions
+                    {
+                        Title = "Success",
+                        Content = "Record successfully deleted.",
+                        OkText = "Close"
+                    });
+                }
             }
+        }
+
+        void LoadTable()
+        {
+            SavedQueryModel = Table.GetQueryModel();
+            Table.ReloadData(SavedQueryModel);
         }
 
     }
