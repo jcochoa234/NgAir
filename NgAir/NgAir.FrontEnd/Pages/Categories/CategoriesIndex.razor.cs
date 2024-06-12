@@ -95,16 +95,36 @@ namespace NgAir.FrontEnd.Pages.Categories
                 OkText = "Ok",
                 Width = 500,
                 Footer = null,
+                Content = builder =>
+                {
+                    if (isEdit)
+                    {
+                        builder.OpenComponent(0, typeof(CategoryEdit));
+                        builder.AddAttribute(1, "Id", id);
+                        builder.AddAttribute(1, "paramenter2", id);
+                        builder.AddAttribute(1, "paramenter", "valueparamenter");
+                    }
+                    else
+                    {
+                        builder.OpenComponent(0, typeof(CategoryCreate));
+                    }
+
+                    builder.CloseComponent();
+                }
             };
 
-            if (isEdit)
-            {
-                ModalService.CreateModal<CategoryEdit, int>(modalConfig, id);
-            }
-            else
-            {
-                ModalService.CreateModal<CategoryCreate, string>(modalConfig, "");
-            }
+            ModalService.CreateModal(modalConfig);
+
+            //if (isEdit)
+            //{
+            //    ModalService.CreateModalAsync(modalConfig);
+            //    //ModalService.CreateModal<CategoryEdit, int>(modalConfig, id);
+            //}
+            //else
+            //{
+            //    ModalService.CreateModalAsync(modalConfig);
+            //    //ModalService.CreateModal<CategoryCreate, string>(modalConfig, "");
+            //}
         }
 
         private async Task DeleteAsycn(Category category)

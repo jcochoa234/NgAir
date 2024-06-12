@@ -22,10 +22,13 @@ namespace NgAir.FrontEnd.Pages.Categories
 
         [EditorRequired, Parameter] public int Id { get; set; }
 
+        [EditorRequired, Parameter] public int paramenter2 { get; set; }
+
+        [EditorRequired, Parameter] public string paramenter { get; set; }
+
 
         protected override async Task OnInitializedAsync()
         {
-            Id = Options;
             await LoadAsync();
         }
 
