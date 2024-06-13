@@ -15,6 +15,7 @@ namespace NgAir.FrontEnd.Pages.Countries
         [Inject] private IRepository Repository { get; set; } = null!;
         [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+        [Parameter] public EventCallback<string> OnSave { get; set; }
 
         public List<Country>? Countries { get; set; }
 
@@ -77,23 +78,32 @@ namespace NgAir.FrontEnd.Pages.Countries
 
         private void ShowModal(int id = 0, bool isEdit = false)
         {
-            var modalConfig = new AntDesign.ModalOptions
+            var modalConfig = new ModalOptions
             {
                 Title = isEdit ? "Edit Country" : "Create Country",
                 Centered = true,
                 OkText = "Ok",
                 Width = 500,
                 Footer = null,
+                Content = builder =>
+                {
+                    if (isEdit)
+                    {
+                        builder.OpenComponent(0, typeof(CountryEdit));
+                        builder.AddAttribute(1, "Id", id);
+                        builder.AddAttribute(2, "OnSave", EventCallback.Factory.Create<string>(this, OnModalSave));
+                    }
+                    else
+                    {
+                        builder.OpenComponent(0, typeof(CountryCreate));
+                        builder.AddAttribute(1, "OnSave", EventCallback.Factory.Create<string>(this, OnModalSave));
+                    }
+                    builder.CloseComponent();
+                },
+
             };
 
-            if (isEdit)
-            {
-                ModalService.CreateModal<CountryEdit, int>(modalConfig, id);
-            }
-            else
-            {
-                ModalService.CreateModal<CountryCreate, string>(modalConfig, "");
-            }
+            ModalService.CreateModal(modalConfig);
         }
 
         private async Task DeleteAsycn(Country country)
@@ -159,6 +169,11 @@ namespace NgAir.FrontEnd.Pages.Countries
         {
             SavedQueryModel = Table.GetQueryModel();
             Table.ReloadData(SavedQueryModel);
+        }
+
+        private void OnModalSave(string newValue)
+        {
+            LoadTable();
         }
 
     }

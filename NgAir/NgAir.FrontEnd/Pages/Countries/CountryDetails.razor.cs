@@ -124,16 +124,26 @@ namespace NgAir.FrontEnd.Pages.Countries
                 OkText = "Ok",
                 Width = 500,
                 Footer = null,
+                Content = builder =>
+                {
+                    if (isEdit)
+                    {
+                        builder.OpenComponent(0, typeof(StateEdit));
+                        builder.AddAttribute(1, "StateId", id);
+                        builder.AddAttribute(2, "OnSave", EventCallback.Factory.Create<string>(this, OnModalSave));
+                    }
+                    else
+                    {
+                        builder.OpenComponent(0, typeof(StateCreate));
+                        builder.AddAttribute(1, "CountryId", countryId);
+                        builder.AddAttribute(2, "OnSave", EventCallback.Factory.Create<string>(this, OnModalSave));
+                    }
+                    builder.CloseComponent();
+                },
+
             };
 
-            if (isEdit)
-            {
-                ModalService.CreateModal<StateEdit, int>(modalConfig, id);
-            }
-            else
-            {
-                ModalService.CreateModal<StateCreate, int>(modalConfig, countryId);
-            }
+            ModalService.CreateModal(modalConfig);
         }
 
         private async Task DeleteAsycn(State state)
@@ -199,6 +209,11 @@ namespace NgAir.FrontEnd.Pages.Countries
         {
             SavedQueryModel = Table.GetQueryModel();
             Table.ReloadData(SavedQueryModel);
+        }
+
+        private void OnModalSave(string newValue)
+        {
+            LoadTable();
         }
 
     }

@@ -18,12 +18,11 @@ namespace NgAir.FrontEnd.Pages.States
         [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-
         [Parameter] public int StateId { get; set; }
+        [Parameter] public EventCallback<string> OnSave { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            StateId = Options;
             await LoadAsync();
         }
 
@@ -61,6 +60,11 @@ namespace NgAir.FrontEnd.Pages.States
                     OkText = "Close"
                 });
                 return;
+            }
+
+            if (OnSave.HasDelegate)
+            {
+                await OnSave.InvokeAsync("Correct");
             }
 
             Return();

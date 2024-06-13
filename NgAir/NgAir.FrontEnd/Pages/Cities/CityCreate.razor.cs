@@ -19,10 +19,10 @@ namespace NgAir.FrontEnd.Pages.Cities
         [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Parameter] public int StateId { get; set; }
+        [Parameter] public EventCallback<string> OnSave { get; set; }
 
         protected override Task OnInitializedAsync()
         {
-            StateId = Options;
             return Task.CompletedTask;
         }
 
@@ -40,6 +40,11 @@ namespace NgAir.FrontEnd.Pages.Cities
                     OkText = "Close"
                 });
                 return;
+            }
+
+            if (OnSave.HasDelegate)
+            {
+                await OnSave.InvokeAsync("Correct");
             }
 
             Return();

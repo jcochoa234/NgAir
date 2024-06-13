@@ -101,30 +101,19 @@ namespace NgAir.FrontEnd.Pages.Categories
                     {
                         builder.OpenComponent(0, typeof(CategoryEdit));
                         builder.AddAttribute(1, "Id", id);
-                        builder.AddAttribute(1, "paramenter2", id);
-                        builder.AddAttribute(1, "paramenter", "valueparamenter");
+                        builder.AddAttribute(2, "OnSave", EventCallback.Factory.Create<string>(this, OnModalSave));
                     }
                     else
                     {
                         builder.OpenComponent(0, typeof(CategoryCreate));
+                        builder.AddAttribute(1, "OnSave", EventCallback.Factory.Create<string>(this, OnModalSave));
                     }
-
                     builder.CloseComponent();
-                }
+                },
+
             };
 
             ModalService.CreateModal(modalConfig);
-
-            //if (isEdit)
-            //{
-            //    ModalService.CreateModalAsync(modalConfig);
-            //    //ModalService.CreateModal<CategoryEdit, int>(modalConfig, id);
-            //}
-            //else
-            //{
-            //    ModalService.CreateModalAsync(modalConfig);
-            //    //ModalService.CreateModal<CategoryCreate, string>(modalConfig, "");
-            //}
         }
 
         private async Task DeleteAsycn(Category category)
@@ -186,10 +175,15 @@ namespace NgAir.FrontEnd.Pages.Categories
             }
         }
 
-        void LoadTable()
+        private void LoadTable()
         {
             SavedQueryModel = Table.GetQueryModel();
             Table.ReloadData(SavedQueryModel);
+        }
+
+        private void OnModalSave(string newValue)
+        {
+            LoadTable();
         }
 
     }

@@ -19,10 +19,10 @@ namespace NgAir.FrontEnd.Pages.Countries
         [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [EditorRequired, Parameter] public int Id { get; set; }
+        [Parameter] public EventCallback<string> OnSave { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            Id = Options;
             await LoadAsync();
         }
 
@@ -67,10 +67,17 @@ namespace NgAir.FrontEnd.Pages.Countries
                 return;
             }
 
+            if (OnSave.HasDelegate)
+            {
+                await OnSave.InvokeAsync("Correct");
+            }
+
             Return();
 
             await Message.Success("Successfully saved changes.");
+
         }
+
 
         private void Return()
         {

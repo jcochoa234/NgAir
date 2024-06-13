@@ -15,6 +15,7 @@ namespace NgAir.FrontEnd.Pages.Categories
         [Inject] private IRepository Repository { get; set; } = null!;
         [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+        [Parameter] public EventCallback<string> OnSave { get; set; }
 
         private async Task CreateAsync()
         {
@@ -30,6 +31,11 @@ namespace NgAir.FrontEnd.Pages.Categories
                 });
 
                 return;
+            }
+
+            if (OnSave.HasDelegate)
+            {
+                await OnSave.InvokeAsync("Correct");
             }
 
             Return();

@@ -18,12 +18,11 @@ namespace NgAir.FrontEnd.Pages.Cities
         [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-
         [Parameter] public int CityId { get; set; }
+        [Parameter] public EventCallback<string> OnSave { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            CityId = Options;
             await LoadAsync();
         }
 
@@ -61,6 +60,11 @@ namespace NgAir.FrontEnd.Pages.Cities
                     OkText = "Close"
                 });
                 return;
+            }
+
+            if (OnSave.HasDelegate)
+            {
+                await OnSave.InvokeAsync("Correct");
             }
 
             Return();

@@ -124,16 +124,26 @@ namespace NgAir.FrontEnd.Pages.States
                 OkText = "Ok",
                 Width = 500,
                 Footer = null,
+                Content = builder =>
+                {
+                    if (isEdit)
+                    {
+                        builder.OpenComponent(0, typeof(CityEdit));
+                        builder.AddAttribute(1, "CityId", id);
+                        builder.AddAttribute(2, "OnSave", EventCallback.Factory.Create<string>(this, OnModalSave));
+                    }
+                    else
+                    {
+                        builder.OpenComponent(0, typeof(CityCreate));
+                        builder.AddAttribute(1, "StateId", stateId);
+                        builder.AddAttribute(2, "OnSave", EventCallback.Factory.Create<string>(this, OnModalSave));
+                    }
+                    builder.CloseComponent();
+                },
+
             };
 
-            if (isEdit)
-            {
-                ModalService.CreateModal<CityEdit, int>(modalConfig, id);
-            }
-            else
-            {
-                ModalService.CreateModal<CityCreate, int>(modalConfig, stateId);
-            }
+            ModalService.CreateModal(modalConfig);
         }
 
         private async Task DeleteAsycn(City city)
@@ -201,6 +211,10 @@ namespace NgAir.FrontEnd.Pages.States
             Table.ReloadData(SavedQueryModel);
         }
 
+        private void OnModalSave(string newValue)
+        {
+            LoadTable();
+        }
 
     }
 }

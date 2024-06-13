@@ -13,17 +13,12 @@ namespace NgAir.FrontEnd.Pages.States
         private State State = new();
         private FormWithName<State>? stateForm;
 
-        [Parameter] public int CountryId { get; set; }
         [Inject] private IRepository Repository { get; set; } = null!;
         [Inject] private ModalService ModalService { get; set; } = null!;
         [Inject] private IMessageService Message { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-
-        protected override Task OnInitializedAsync()
-        {
-            CountryId = Options;
-            return Task.CompletedTask;
-        }
+        [Parameter] public int CountryId { get; set; }
+        [Parameter] public EventCallback<string> OnSave { get; set; }
 
         private async Task CreateAsync()
         {
@@ -39,6 +34,11 @@ namespace NgAir.FrontEnd.Pages.States
                     OkText = "Close"
                 });
                 return;
+            }
+
+            if (OnSave.HasDelegate)
+            {
+                await OnSave.InvokeAsync("Correct");
             }
 
             Return();
